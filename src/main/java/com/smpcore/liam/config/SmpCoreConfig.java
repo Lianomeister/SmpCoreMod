@@ -120,6 +120,12 @@ public final class SmpCoreConfig {
 		 */
 		public double pvpDamageMultiplier = 1.0;
 
+		/**
+		 * Caps mace damage dealt to players (after multipliers). Set 0 to disable.
+		 * Value is in raw damage (2.0 = 1 heart).
+		 */
+		public double maceDamageCap = 0.0;
+
 		public int shieldCooldownSeconds = 0;
 		public boolean maceStunsShield = false;
 		public int maceShieldStunSeconds = 0;

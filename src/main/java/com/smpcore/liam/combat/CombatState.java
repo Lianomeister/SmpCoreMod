@@ -15,6 +15,7 @@ public final class CombatState {
 	private static volatile boolean antiElytra = true;
 	private static volatile double playerDamageMultiplier = 1.0;
 	private static volatile double pvpDamageMultiplier = 1.0;
+	private static volatile double maceDamageCap = 0.0;
 
 	private CombatState() {
 	}
@@ -26,6 +27,7 @@ public final class CombatState {
 		antiElytra = config.combat.antiElytra;
 		playerDamageMultiplier = config.combat.playerDamageMultiplier;
 		pvpDamageMultiplier = config.combat.pvpDamageMultiplier;
+		maceDamageCap = Math.max(0.0, config.combat.maceDamageCap);
 	}
 
 	public static void tag(UUID playerId) {
@@ -65,5 +67,9 @@ public final class CombatState {
 
 	public static double playerDamageMultiplier() {
 		return enabled ? playerDamageMultiplier : 1.0;
+	}
+
+	public static double maceDamageCap() {
+		return enabled ? maceDamageCap : 0.0;
 	}
 }

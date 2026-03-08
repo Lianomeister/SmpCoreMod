@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -28,6 +29,11 @@ public class LivingEntityDamageScaleMixin {
 			double pvpMult = CombatState.pvpDamageMultiplier();
 			if (pvpMult != 1.0) {
 				out *= pvpMult;
+			}
+
+			double maceCap = CombatState.maceDamageCap();
+			if (maceCap > 0.0 && source.getEntity() instanceof Player attacker && attacker.getMainHandItem().is(Items.MACE)) {
+				out = Math.min(out, maceCap);
 			}
 		}
 

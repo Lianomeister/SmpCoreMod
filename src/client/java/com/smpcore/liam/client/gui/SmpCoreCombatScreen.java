@@ -35,6 +35,7 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 
 		addDouble(new ItemStack(Items.IRON_SWORD), "Player damage multiplier", "Scales ALL damage taken by players. Example: 10.0 = 10x.", () -> config.combat.playerDamageMultiplier, v -> config.combat.playerDamageMultiplier = v, 0.0, 100.0);
 		addDouble(new ItemStack(Items.NETHERITE_SWORD), "PvP damage multiplier", "Scales only PvP damage. Example: 10.0 = 10x.", () -> config.combat.pvpDamageMultiplier, v -> config.combat.pvpDamageMultiplier = v, 0.0, 100.0);
+		addDoubleRaw(new ItemStack(Items.MACE), "Mace damage cap", "Caps mace damage dealt to players (0 = disabled). 2.0 = 1 heart.", () -> config.combat.maceDamageCap, v -> config.combat.maceDamageCap = v, 0.0, 2048.0, "dmg");
 
 		addInt(new ItemStack(Items.SHIELD), "Shield cooldown (block)", "Adds a shield cooldown whenever damage is blocked.", () -> config.combat.shieldCooldownSeconds, v -> config.combat.shieldCooldownSeconds = v, 0, 60, "s");
 		addToggle(new ItemStack(Items.MACE), "Mace stuns shield", "If the shield blocks a mace hit, the shield gets stunned.", () -> config.combat.maceStunsShield, v -> config.combat.maceStunsShield = v);
@@ -108,8 +109,27 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 						raw -> {
 							double v = clamp(parseDouble(raw, getter.getAsDouble()), min, max);
 							setter.accept(v);
-						})),
+				})),
 				() -> Component.literal(trimDouble(getter.getAsDouble()) + "x")
+		));
+	}
+
+	private void addDoubleRaw(ItemStack icon, String title, String desc, java.util.function.DoubleSupplier getter, java.util.function.DoubleConsumer setter, double min, double max, String suffix) {
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				icon,
+				Component.literal(title),
+				Component.literal(desc),
+				List.of(Component.literal(desc), Component.literal("Range: " + min + " .. " + max)),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal(title),
+						Component.literal("Enter a number"),
+						Double.toString(getter.getAsDouble()),
+						List.of(Component.literal(desc), Component.literal("Range: " + min + " .. " + max)),
+						raw -> {
+							double v = clamp(parseDouble(raw, getter.getAsDouble()), min, max);
+							setter.accept(v);
+						})),
+				() -> Component.literal(getter.getAsDouble() <= 0.0 ? "Disabled" : (trimDouble(getter.getAsDouble()) + " " + suffix))
 		));
 	}
 
