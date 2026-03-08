@@ -22,6 +22,34 @@ public final class SmpCoreConfig {
 	public static final class Gameplay {
 		public boolean pvpEnabled = true;
 		public boolean antiXrayEnabled = false;
+		public AntiXrayMode antiXrayMode = AntiXrayMode.BASIC;
+	}
+
+	public enum AntiXrayMode {
+		BASIC,
+		FAST,
+		STRICT
+	}
+
+	public Combat combat = new Combat();
+	public Cooldowns cooldowns = new Cooldowns();
+
+	public static final class Combat {
+		public boolean enabled = true;
+		public int tagSeconds = 15;
+		public boolean antiRestock = true;
+		public boolean antiElytra = true;
+
+		/**
+		 * PvP-only damage multiplier. Set 1.0 for vanilla behavior.
+		 */
+		public double pvpDamageMultiplier = 1.0;
+	}
+
+	public static final class Cooldowns {
+		public int pearlSeconds = 0;
+		public int gapSeconds = 0;
+		public int windChargeSeconds = 0;
 	}
 
 	public static final class Bans {

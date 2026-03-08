@@ -4,6 +4,7 @@ import com.smpcore.liam.client.gui.widget.IconCardButton;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -22,24 +23,40 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 		int left = (this.width - w) / 2;
 		int y = 44;
 
-		addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.IRON_SWORD), Component.literal("Gameplay"), () -> {
+		IconCardButton gameplay = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.IRON_SWORD), Component.literal("Gameplay"), () -> {
 			this.minecraft.setScreen(new SmpCoreGameplayScreen(this, config));
 		}));
+		gameplay.setTooltip(Tooltip.create(Component.literal("PvP toggle, anti-xray settings, spectator-after-death.")));
 		y += h + gap;
 
-		addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.BARRIER), Component.literal("Bans"), () -> {
+		IconCardButton bans = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.BARRIER), Component.literal("Bans"), () -> {
 			this.minecraft.setScreen(new SmpCoreBansScreen(this, config));
 		}));
+		bans.setTooltip(Tooltip.create(Component.literal("Bed/anchor/TNT minecart/mace/pearls/crystals/tipped arrows.")));
 		y += h + gap;
 
-		addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.POTION), Component.literal("Potions"), () -> {
+		IconCardButton potions = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.POTION), Component.literal("Potions"), () -> {
 			this.minecraft.setScreen(new SmpCorePotionsScreen(this, config));
 		}));
+		potions.setTooltip(Tooltip.create(Component.literal("Ban all potions or specific potion effects.")));
 		y += h + gap;
 
-		addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.ENCHANTED_BOOK), Component.literal("Enchant Limits"), () -> {
+		IconCardButton ench = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.ENCHANTED_BOOK), Component.literal("Enchant Limits"), () -> {
 			this.minecraft.setScreen(new SmpCoreEnchantmentsScreen(this, config));
 		}));
+		ench.setTooltip(Tooltip.create(Component.literal("Sharpness/protection clamping + banned enchant list (server-side).")));
+		y += h + gap;
+
+		IconCardButton combat = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.SHIELD), Component.literal("Combat"), () -> {
+			this.minecraft.setScreen(new SmpCoreCombatScreen(this, config));
+		}));
+		combat.setTooltip(Tooltip.create(Component.literal("Combat tag, anti-restock, anti-elytra, PvP damage scaling.")));
+		y += h + gap;
+
+		IconCardButton cds = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.ENDER_PEARL), Component.literal("Cooldowns"), () -> {
+			this.minecraft.setScreen(new SmpCoreCooldownsScreen(this, config));
+		}));
+		cds.setTooltip(Tooltip.create(Component.literal("Pearl/gap/wind-charge cooldowns.")));
 
 		addRenderableWidget(Button.builder(Component.literal("Close"), b -> onClose())
 				.bounds(left, this.height - 32, w, 20)
@@ -54,4 +71,3 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 		super.render(graphics, mouseX, mouseY, partialTick);
 	}
 }
-

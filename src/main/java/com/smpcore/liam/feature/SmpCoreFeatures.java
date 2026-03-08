@@ -12,6 +12,8 @@ public final class SmpCoreFeatures {
 		PotionBanFeature.init(config);
 		PvpFeature.init(config);
 		SpectatorAfterDeathFeature.init(config);
+		CombatFeature.init(config);
+		CooldownFeature.init(config);
 		EffectBanFeature.init(config);
 		EnchantmentRulesFeature.init(config);
 	}
@@ -22,6 +24,8 @@ public final class SmpCoreFeatures {
 		PotionBanFeature.reload(config);
 		PvpFeature.reload(config);
 		SpectatorAfterDeathFeature.reload(config);
+		CombatFeature.reload(config);
+		CooldownFeature.reload(config);
 		EffectBanFeature.reload(config);
 		EnchantmentRulesFeature.reload(config);
 	}

@@ -3,7 +3,9 @@
 	"package": "com.smpcore.liam.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"ExampleMixin",
+		"LivingEntityDamageScaleMixin",
+		"PlayerElytraCombatMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

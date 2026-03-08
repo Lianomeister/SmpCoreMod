@@ -3,6 +3,7 @@ package com.smpcore.liam.client.gui;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
 public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
@@ -17,11 +18,16 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		int y = 54;
 
 		Button pvp = addRenderableWidget(toggleButton(x, y, w, "PvP", () -> config.gameplay.pvpEnabled, v -> config.gameplay.pvpEnabled = v));
+		pvp.setTooltip(Tooltip.create(Component.literal("Enable/disable player vs player damage.")));
 		y += 26;
-		Button ax = addRenderableWidget(toggleButton(x, y, w, "Anti X-Ray", () -> config.gameplay.antiXrayEnabled, v -> config.gameplay.antiXrayEnabled = v));
-		ax.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("Placeholder: toggle stored in config (implementation later).")));
+
+		Button ax = addRenderableWidget(Button.builder(Component.literal("Anti X-Ray settings..."), b -> {
+			this.minecraft.setScreen(new SmpCoreAntiXrayScreen(this, config));
+		}).bounds(x, y, w, 20).build());
+		ax.setTooltip(Tooltip.create(Component.literal("Configure Anti X-Ray engine mode.")));
 		y += 26;
-		addRenderableWidget(toggleButton(x, y, w, "Spectator after death", () -> config.death.spectatorAfterDeath, v -> config.death.spectatorAfterDeath = v));
+		Button spec = addRenderableWidget(toggleButton(x, y, w, "Spectator after death", () -> config.death.spectatorAfterDeath, v -> config.death.spectatorAfterDeath = v));
+		spec.setTooltip(Tooltip.create(Component.literal("Hardcore-like: after death, respawn in spectator.")));
 
 		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, 116, 20).build());
 		addRenderableWidget(Button.builder(Component.literal("Save"), b -> saveToServer()).bounds(x + 124, this.height - 32, 116, 20).build());
