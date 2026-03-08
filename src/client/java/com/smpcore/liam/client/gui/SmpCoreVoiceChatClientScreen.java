@@ -7,6 +7,7 @@ import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -20,7 +21,7 @@ public final class SmpCoreVoiceChatClientScreen extends SmpCoreMenuBase {
 	private SmpCoreCategoryList list;
 	private Properties props;
 
-	public SmpCoreVoiceChatClientScreen(SmpCoreMenuBase parent, SmpCoreConfig config) {
+	public SmpCoreVoiceChatClientScreen(Screen parent, SmpCoreConfig config) {
 		super(Component.literal("Voice Chat (Client)"), parent, config);
 	}
 

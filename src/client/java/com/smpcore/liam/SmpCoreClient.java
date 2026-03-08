@@ -1,7 +1,9 @@
 package com.smpcore.liam;
 
 import com.smpcore.liam.client.gui.SmpCoreMainMenuScreen;
+import com.smpcore.liam.client.gui.SmpCoreVoiceChatClientScreen;
 import com.smpcore.liam.config.ConfigJson;
+import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.net.SmpCorePayloads;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -15,10 +17,12 @@ import org.lwjgl.glfw.GLFW;
 public class SmpCoreClient implements ClientModInitializer {
 	private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(SmpCore.MOD_ID, "menu"));
 	private static KeyMapping openMenuKey;
+	private static KeyMapping openVoiceChatClientKey;
 
 	@Override
 	public void onInitializeClient() {
-		openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.smpcore.open_menu", GLFW.GLFW_KEY_O, CATEGORY));
+		openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.smpcore.open_menu", GLFW.GLFW_KEY_UNKNOWN, CATEGORY));
+		openVoiceChatClientKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.smpcore.open_voicechat_client", GLFW.GLFW_KEY_UNKNOWN, CATEGORY));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openMenuKey.consumeClick()) {
@@ -31,6 +35,12 @@ public class SmpCoreClient implements ClientModInitializer {
 					// Fallback for non-play screens / no server support: try the command.
 					client.player.connection.sendCommand("smpcore");
 				}
+			}
+			while (openVoiceChatClientKey.consumeClick()) {
+				if (client.player == null) {
+					continue;
+				}
+				client.setScreen(new SmpCoreVoiceChatClientScreen(client.screen, new SmpCoreConfig()));
 			}
 		});
 
