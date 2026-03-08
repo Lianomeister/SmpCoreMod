@@ -19,7 +19,8 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 
 	@Override
 	protected void init() {
-		int w = Math.min(480, this.width - 40);
+		// Give the grid more room so the tiles can be larger/squarer.
+		int w = Math.min(760, this.width - 40);
 		int h = this.height - 92;
 		int left = (this.width - w) / 2;
 		int top = 44;

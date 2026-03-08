@@ -66,7 +66,7 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		// If the grid is too narrow, reduce columns to keep tiles square.
 		int innerW = Math.max(0, this.width - padding * 2);
 		int innerH = Math.max(0, this.height - padding * 2);
-		int desiredMinTile = 78;
+		int desiredMinTile = 96;
 		while (cols > 2) {
 			int tile = (innerW - gap * (cols - 1)) / cols;
 			if (tile >= desiredMinTile) {
@@ -181,7 +181,7 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 
 			// Icon (centered, top)
 			int iconX = x + (s - 16) / 2;
-			int iconY = y + 16;
+			int iconY = y + 12;
 			graphics.renderFakeItem(tile.entry().icon(), iconX, iconY);
 
 			// Title (centered, bottom; avoid ugly single-letter wrapping like "Cooldown" + "s")
@@ -189,6 +189,7 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 			String titlePlain = tile.entry().title().getString();
 			int lineH = 9;
 			int textColor = (hovered ? 0xFFFFFF : 0xEDEDED) | 0xFF000000;
+			int bottomPad = 10;
 			if (!titlePlain.contains(" ")) {
 				String fitted = titlePlain;
 				if (mc.font.width(fitted) > textW) {
@@ -197,12 +198,12 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 				}
 				int lw = mc.font.width(fitted);
 				int textX = x + (s - lw) / 2;
-				int textY = y + s - 16 - lineH;
+				int textY = y + s - bottomPad - lineH;
 				graphics.drawString(mc.font, fitted, textX, textY, textColor, true);
 			} else {
 				List<FormattedCharSequence> lines = mc.font.split(tile.entry().title(), Math.max(20, textW));
 				int maxLines = Math.min(2, lines.size());
-				int textY = y + s - 14 - (maxLines * lineH);
+				int textY = y + s - bottomPad - (maxLines * lineH);
 				for (int li = 0; li < maxLines; li++) {
 					FormattedCharSequence line = lines.get(li);
 					int lw = mc.font.width(line);
