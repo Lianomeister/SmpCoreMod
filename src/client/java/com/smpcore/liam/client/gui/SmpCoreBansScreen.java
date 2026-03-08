@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SmpCoreBansScreen extends SmpCoreMenuBase {
@@ -34,6 +35,33 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 		addBan(new ItemStack(Items.ENDER_PEARL), "Ender pearls", "Disables ender pearl usage.", () -> config.bans.banPearls, v -> config.bans.banPearls = v);
 		addBan(new ItemStack(Items.END_CRYSTAL), "End crystals", "Disables end crystal placement/usage.", () -> config.bans.banCrystals, v -> config.bans.banCrystals = v);
 		addBan(new ItemStack(Items.TIPPED_ARROW), "Tipped arrows", "Disables tipped arrows.", () -> config.bans.banTippedArrows, v -> config.bans.banTippedArrows = v);
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.ENDER_CHEST),
+				Component.literal("No Ender Chest items"),
+				Component.literal("Items that cannot be stored in Ender Chests (comma-separated IDs)."),
+				List.of(
+						Component.literal("Comma-separated item ids, e.g.: minecraft:elytra, minecraft:netherite_ingot"),
+						Component.literal("These items can still be kept in your inventory / normal chests.")
+				),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("No Ender Chest items"),
+						Component.literal("Comma-separated item ids"),
+						String.join(", ", config.storage.noEnderChestItems),
+						List.of(Component.literal("Example: minecraft:elytra, minecraft:netherite_ingot")),
+						txt -> {
+							String[] parts = txt.split(",");
+							ArrayList<String> ids = new ArrayList<>();
+							for (String p : parts) {
+								String id = p.trim();
+								if (!id.isEmpty()) {
+									ids.add(id);
+								}
+							}
+							config.storage.noEnderChestItems = ids;
+						})),
+				() -> Component.literal(config.storage.noEnderChestItems.isEmpty() ? "None" : (config.storage.noEnderChestItems.size() + " items"))
+		));
 
 		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}

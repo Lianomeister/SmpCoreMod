@@ -8,6 +8,7 @@
 		"ClientboundLevelChunkPacketDataAntiXrayMixin",
 		"BreachSwapBanPacketMixin",
 		"EndPortalBlockDimensionMixin",
+		"EnderChestLockedItemsClickMixin",
 		"LevelChunkSectionAntiXrayMixin",
 		"LivingEntityDamageScaleMixin",
 		"ItemEntityPickupClampMixin",

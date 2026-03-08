@@ -11,6 +11,7 @@ public final class SmpCoreFeatures {
 		DimensionRulesFeature.init(config);
 		OnePlayerSleepFeature.init(config);
 		BedAndAnchorBanFeature.init(config);
+		EnderChestLockFeature.init(config);
 		ItemBanFeature.init(config);
 		PotionBanFeature.init(config);
 		PvpFeature.init(config);
@@ -30,6 +31,7 @@ public final class SmpCoreFeatures {
 		DimensionRulesFeature.reload(config);
 		OnePlayerSleepFeature.reload(config);
 		BedAndAnchorBanFeature.reload(config);
+		EnderChestLockFeature.reload(config);
 		ItemBanFeature.reload(config);
 		PotionBanFeature.reload(config);
 		PvpFeature.reload(config);

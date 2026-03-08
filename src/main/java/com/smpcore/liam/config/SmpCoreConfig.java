@@ -11,6 +11,7 @@ public final class SmpCoreConfig {
 	public Dimensions dimensions = new Dimensions();
 	public Sleep sleep = new Sleep();
 	public VoiceChat voiceChat = new VoiceChat();
+	public Storage storage = new Storage();
 	public Bans bans = new Bans();
 	public Potions potions = new Potions();
 	public Death death = new Death();
@@ -90,6 +91,14 @@ public final class SmpCoreConfig {
 		VOIP,
 		AUDIO,
 		RESTRICTED_LOWDELAY
+	}
+
+	public static final class Storage {
+		/**
+		 * Item IDs like "minecraft:elytra" which cannot be put into Ender Chests.
+		 * This is useful for "vault" rules where certain items must stay in normal inventories/chests.
+		 */
+		public List<String> noEnderChestItems = new ArrayList<>();
 	}
 
 	public Combat combat = new Combat();
