@@ -15,15 +15,21 @@ public final class SmpCoreEditValueScreen extends SmpCoreMenuBase {
 	private final List<Component> help;
 	private final String initialValue;
 	private final Consumer<String> onSave;
+	private final boolean saveToServer;
 
 	private EditBox value;
 
 	public SmpCoreEditValueScreen(SmpCoreMenuBase parent, SmpCoreConfig config, Component title, Component subtitle, String initialValue, List<Component> help, Consumer<String> onSave) {
+		this(parent, config, title, subtitle, initialValue, help, onSave, true);
+	}
+
+	public SmpCoreEditValueScreen(SmpCoreMenuBase parent, SmpCoreConfig config, Component title, Component subtitle, String initialValue, List<Component> help, Consumer<String> onSave, boolean saveToServer) {
 		super(title, parent, config);
 		this.subtitle = subtitle;
 		this.initialValue = initialValue;
 		this.help = help == null ? List.of() : help;
 		this.onSave = onSave;
+		this.saveToServer = saveToServer;
 	}
 
 	@Override
@@ -60,8 +66,9 @@ public final class SmpCoreEditValueScreen extends SmpCoreMenuBase {
 
 	private void save() {
 		onSave.accept(value.getValue());
-		saveToServer();
+		if (saveToServer) {
+			saveToServer();
+		}
 		onClose();
 	}
 }
-

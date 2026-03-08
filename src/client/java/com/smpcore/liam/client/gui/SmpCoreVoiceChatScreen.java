@@ -27,6 +27,15 @@ public final class SmpCoreVoiceChatScreen extends SmpCoreMenuBase {
 		list = addRenderableWidget(new SmpCoreCategoryList(this.minecraft, w, this.height, top, listBottom, 44));
 		list.setLeftPos(left);
 
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.PLAYER_HEAD),
+				Component.literal("Client settings"),
+				Component.literal("Edit your local voicechat-client.properties (only affects your client)."),
+				List.of(Component.literal("This does NOT change other players. Useful for admins/modpack testing.")),
+				() -> this.minecraft.setScreen(new SmpCoreVoiceChatClientScreen(this, config)),
+				() -> Component.literal("Open")
+		));
+
 		addToggle(
 				new ItemStack(Items.COMPARATOR),
 				"Manage Simple Voice Chat",
@@ -315,4 +324,3 @@ public final class SmpCoreVoiceChatScreen extends SmpCoreMenuBase {
 		return values[(codec.ordinal() + 1) % values.length];
 	}
 }
-
