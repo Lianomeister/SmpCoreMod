@@ -102,15 +102,15 @@ public final class SmpCoreCategoryList extends ObjectSelectionList<SmpCoreCatego
 			if (valueText != null) {
 				int valueW = mc.font.width(valueText);
 				int valueX = cardX + cardW - 10 - valueW;
-				graphics.drawString(mc.font, valueText, valueX, titleY, hovered ? 0xDCCBFF : 0xC9B6FF, true);
+				graphics.drawString(mc.font, valueText, valueX, titleY, (hovered ? 0xDCCBFF : 0xC9B6FF) | 0xFF000000, true);
 			}
 
-			graphics.drawString(mc.font, title, textX, titleY, titleColor, true);
+			graphics.drawString(mc.font, title, textX, titleY, titleColor | 0xFF000000, true);
 
 			int maxDescWidth = cardX + cardW - 10 - textX;
 			List<FormattedCharSequence> lines = mc.font.split(description, Math.max(10, maxDescWidth));
 			if (!lines.isEmpty()) {
-				graphics.drawString(mc.font, lines.getFirst(), textX, descY, descColor, false);
+				graphics.drawString(mc.font, lines.getFirst(), textX, descY, descColor | 0xFF000000, false);
 			}
 		}
 
