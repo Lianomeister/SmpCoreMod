@@ -2,14 +2,13 @@
 	"schemaVersion": 1,
 	"id": "smpcore",
 	"version": "${version}",
-	"name": "SmpCore",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "SMP Core",
+	"description": "Server-side SMP rules, combat balance tweaks, and QOL features for Fabric 1.21.11.",
 	"authors": [
-		"Me!"
+		"SMP Core"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://example.invalid/smpcore"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/smpcore/icon.png",
