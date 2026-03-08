@@ -36,6 +36,8 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 		addBan(new ItemStack(Items.END_CRYSTAL), "End crystals", "Disables end crystal placement/usage.", () -> config.bans.banCrystals, v -> config.bans.banCrystals = v);
 		addBan(new ItemStack(Items.TIPPED_ARROW), "Tipped arrows", "Disables tipped arrows.", () -> config.bans.banTippedArrows, v -> config.bans.banTippedArrows = v);
 
+		addBan(new ItemStack(Items.DROPPER), "Remove banned items on join", "Removes banned items from players when they join.", () -> config.bans.removeBannedItemsOnJoin, v -> config.bans.removeBannedItemsOnJoin = v);
+
 		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
 				new ItemStack(Items.ENDER_CHEST),
 				Component.literal("No Ender Chest items"),
@@ -61,6 +63,27 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 							config.storage.noEnderChestItems = ids;
 						})),
 				() -> Component.literal(config.storage.noEnderChestItems.isEmpty() ? "None" : (config.storage.noEnderChestItems.size() + " items"))
+		));
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.BARRIER),
+				Component.literal("Custom banned items"),
+				Component.literal("Comma-separated IDs of items to ban."),
+				List.of(
+						Component.literal("Example: minecraft:ender_pearl, minecraft:elytra"),
+						Component.literal("Use commas to separate ids.")
+				),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Custom banned items"),
+						Component.literal("Comma-separated item ids"),
+						String.join(", ", config.bans.bannedItems),
+						List.of(
+								Component.literal("Example: minecraft:ender_pearl, minecraft:elytra"),
+								Component.literal("Use commas to separate ids.")
+						),
+						txt -> config.bans.bannedItems = parseIdList(txt)
+				)),
+				() -> Component.literal(config.bans.bannedItems.isEmpty() ? "None" : (config.bans.bannedItems.size() + " items"))
 		));
 
 		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
@@ -93,5 +116,16 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 				},
 				() -> Component.literal(getter.getAsBoolean() ? "Banned" : "Allowed")
 		));
+	}
+
+	private static List<String> parseIdList(String raw) {
+		List<String> out = new ArrayList<>();
+		for (String part : raw.split(",")) {
+			String trimmed = part.trim();
+			if (!trimmed.isEmpty()) {
+				out.add(trimmed);
+			}
+		}
+		return out;
 	}
 }

@@ -28,6 +28,25 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		list.setLeftPos(left);
 
 		addToggle(new ItemStack(Items.IRON_SWORD), "PvP", "Enable/disable player vs player damage.", () -> config.gameplay.pvpEnabled, v -> config.gameplay.pvpEnabled = v);
+		addToggle(new ItemStack(Items.PAPER), "Action bar notices", "Send control center notices to the action bar instead of chat.", () -> config.messages.actionBar, v -> config.messages.actionBar = v);
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.PAPER),
+				Component.literal("Notice cooldown"),
+				Component.literal("Minimum milliseconds between repeated notices (0 = never repeat)."),
+				List.of(Component.literal("Affects combat, cooldown, ban, and other notices.")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Notice cooldown"),
+						Component.literal("Milliseconds"),
+						Long.toString(config.messages.minMillisBetweenNotices),
+						List.of(Component.literal("Minimum milliseconds between repeated notices (0 = never repeat).")),
+						txt -> {
+							try {
+								config.messages.minMillisBetweenNotices = Math.max(0, Long.parseLong(txt.trim()));
+							} catch (Exception ignored) {
+							}
+						})),
+				() -> Component.literal(config.messages.minMillisBetweenNotices + " ms")
+		));
 
 		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
 				new ItemStack(Items.DIAMOND_ORE),
