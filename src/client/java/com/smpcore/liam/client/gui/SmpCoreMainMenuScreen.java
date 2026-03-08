@@ -27,37 +27,37 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 		this.list = addRenderableWidget(new SmpCoreCategoryList(this.minecraft, w, this.height, top, listBottom, 44));
 		this.list.setLeftPos(left);
 
-		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.IRON_SWORD), Component.literal("Gameplay"), Component.literal("PvP, anti-xray, spectator after death, dimensions, sleep."),
+		this.list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.IRON_SWORD), Component.literal("Gameplay"), Component.literal("PvP, anti-xray, spectator after death, dimensions, sleep."),
 				List.of(Component.literal("PvP toggle, anti-xray settings, spectator-after-death.")), () -> {
 			this.minecraft.setScreen(new SmpCoreGameplayScreen(this, config));
 		}));
 
-		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.BARRIER), Component.literal("Bans"), Component.literal("Bed/anchor/TNT minecart/mace/pearls/crystals/tipped arrows and more."),
+		this.list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.BARRIER), Component.literal("Bans"), Component.literal("Bed/anchor/TNT minecart/mace/pearls/crystals/tipped arrows and more."),
 				List.of(Component.literal("Bed/anchor/TNT minecart/mace/pearls/crystals/tipped arrows.")), () -> {
 			this.minecraft.setScreen(new SmpCoreBansScreen(this, config));
 		}));
 
-		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.POTION), Component.literal("Potions"), Component.literal("Ban all potions or only certain effects (with a sub-menu)."),
+		this.list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.POTION), Component.literal("Potions"), Component.literal("Ban all potions or only certain effects (with a sub-menu)."),
 				List.of(Component.literal("Ban all potions or specific potion effects.")), () -> {
 			this.minecraft.setScreen(new SmpCorePotionsScreen(this, config));
 		}));
 
-		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.ENCHANTED_BOOK), Component.literal("Enchant Limits"), Component.literal("Clamp max levels and ban specific enchantments (server-side)."),
+		this.list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.ENCHANTED_BOOK), Component.literal("Enchant Limits"), Component.literal("Clamp max levels and ban specific enchantments (server-side)."),
 				List.of(Component.literal("Sharpness/protection clamping + banned enchant list (server-side).")), () -> {
 			this.minecraft.setScreen(new SmpCoreEnchantmentsScreen(this, config));
 		}));
 
-		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.SHIELD), Component.literal("Combat"), Component.literal("Combat tag, anti-restock, anti-elytra, and damage scaling."),
+		this.list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.SHIELD), Component.literal("Combat"), Component.literal("Combat tag, anti-restock, anti-elytra, and damage scaling."),
 				List.of(Component.literal("Combat tag, anti-restock, anti-elytra, PvP damage scaling.")), () -> {
 			this.minecraft.setScreen(new SmpCoreCombatScreen(this, config));
 		}));
 
-		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.ENDER_PEARL), Component.literal("Cooldowns"), Component.literal("Pearl, E-gap, wind charge, mace and more."),
+		this.list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.ENDER_PEARL), Component.literal("Cooldowns"), Component.literal("Pearl, E-gap, wind charge, mace and more."),
 				List.of(Component.literal("Pearl/gap/wind-charge cooldowns.")), () -> {
 			this.minecraft.setScreen(new SmpCoreCooldownsScreen(this, config));
 		}));
 
-		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.NOTE_BLOCK), Component.literal("Voice Chat"), Component.literal("Manage Simple Voice Chat server config (integration)."),
+		this.list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.NOTE_BLOCK), Component.literal("Voice Chat"), Component.literal("Manage Simple Voice Chat server config (integration)."),
 				List.of(Component.literal("Simple Voice Chat integration + server-side settings.")), () -> {
 			this.minecraft.setScreen(new SmpCoreVoiceChatScreen(this, config));
 		}));
@@ -76,7 +76,7 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 		if (list != null) {
 			List<Component> tooltip = list.consumeHoveredTooltip();
 			if (tooltip != null) {
-				graphics.renderTooltip(this.font, tooltip, mouseX, mouseY);
+				graphics.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
 			}
 		}
 	}
