@@ -50,8 +50,8 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
 
-		graphics.drawCenteredString(font, Component.literal("Simple Voice Chat ist nicht installiert"), width / 2, 22, 0xFFFFFF);
-		graphics.drawCenteredString(font, Component.literal("Für die Voice-Chat-Features brauchst du die Mod zusätzlich."), width / 2, 36, 0xB9B9B9);
+		graphics.drawCenteredString(font, Component.literal("Simple Voice Chat ist nicht installiert"), width / 2, 22, 0xFFFFFF | 0xFF000000);
+		graphics.drawCenteredString(font, Component.literal("Für die Voice-Chat-Features brauchst du die Mod zusätzlich."), width / 2, 36, 0xB9B9B9 | 0xFF000000);
 
 		int w = Math.min(520, this.width - 40);
 		int left = (this.width - w) / 2;
@@ -66,7 +66,7 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 
 		List<FormattedCharSequence> lines = font.split(steps, w);
 		for (FormattedCharSequence line : lines) {
-			graphics.drawString(font, line, left, textY, 0xEDEDED, false);
+			graphics.drawString(font, line, left, textY, 0xEDEDED | 0xFF000000, false);
 			textY += 11;
 		}
 
