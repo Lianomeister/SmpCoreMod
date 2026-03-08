@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public final class SmpCoreMissingVoiceChatScreen extends Screen {
-	private static final String MODRINTH_URL = "https://modrinth.com/mod/simple-voice-chat";
+	private static final String MODRINTH_URL = "https://cdn.modrinth.com/data/9eGKb6K1/versions/pFTZ8sqQ/voicechat-fabric-1.21.11-2.6.12.jar";
 
 	private final Screen parent;
 
