@@ -4,8 +4,10 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"ExampleMixin",
+		"EndPortalBlockDimensionMixin",
 		"LivingEntityDamageScaleMixin",
 		"ItemEntityPickupClampMixin",
+		"NetherPortalBlockDimensionMixin",
 		"PlayerElytraCombatMixin"
 	],
 	"injectors": {

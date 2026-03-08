@@ -8,6 +8,8 @@ public final class SmpCoreConfig {
 
 	public Messages messages = new Messages();
 	public Gameplay gameplay = new Gameplay();
+	public Dimensions dimensions = new Dimensions();
+	public Sleep sleep = new Sleep();
 	public VoiceChat voiceChat = new VoiceChat();
 	public Bans bans = new Bans();
 	public Potions potions = new Potions();
@@ -24,6 +26,16 @@ public final class SmpCoreConfig {
 		public boolean pvpEnabled = true;
 		public boolean antiXrayEnabled = false;
 		public AntiXrayMode antiXrayMode = AntiXrayMode.BASIC;
+	}
+
+	public static final class Dimensions {
+		public boolean allowNether = true;
+		public boolean allowEnd = true;
+	}
+
+	public static final class Sleep {
+		public boolean onePlayerSleep = false;
+		public boolean clearWeatherOnSkip = true;
 	}
 
 	public enum AntiXrayMode {

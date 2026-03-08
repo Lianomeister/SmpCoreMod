@@ -7,6 +7,8 @@ public final class SmpCoreFeatures {
 	}
 
 	public static void initAll(SmpCoreConfig config) {
+		DimensionRulesFeature.init(config);
+		OnePlayerSleepFeature.init(config);
 		BedAndAnchorBanFeature.init(config);
 		ItemBanFeature.init(config);
 		PotionBanFeature.init(config);
@@ -20,6 +22,8 @@ public final class SmpCoreFeatures {
 	}
 
 	public static void reloadAll(SmpCoreConfig config) {
+		DimensionRulesFeature.reload(config);
+		OnePlayerSleepFeature.reload(config);
 		BedAndAnchorBanFeature.reload(config);
 		ItemBanFeature.reload(config);
 		PotionBanFeature.reload(config);

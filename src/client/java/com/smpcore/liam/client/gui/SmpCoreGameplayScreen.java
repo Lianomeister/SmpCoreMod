@@ -1,55 +1,83 @@
 package com.smpcore.liam.client.gui;
 
+import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.util.List;
 
 public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
+	private SmpCoreCategoryList list;
+
 	public SmpCoreGameplayScreen(SmpCoreMenuBase parent, SmpCoreConfig config) {
 		super(Component.literal("Gameplay"), parent, config);
 	}
 
 	@Override
 	protected void init() {
-		int w = 240;
-		int x = (this.width - w) / 2;
-		int y = 54;
+		int w = Math.min(420, this.width - 40);
+		int left = (this.width - w) / 2;
+		int top = 44;
+		int listBottom = this.height - 44;
 
-		Button pvp = addRenderableWidget(toggleButton(x, y, w, "PvP", () -> config.gameplay.pvpEnabled, v -> config.gameplay.pvpEnabled = v));
-		pvp.setTooltip(Tooltip.create(Component.literal("Enable/disable player vs player damage.")));
-		y += 26;
+		list = addRenderableWidget(new SmpCoreCategoryList(this.minecraft, w, this.height, top, listBottom, 44));
+		list.setLeftPos(left);
 
-		Button ax = addRenderableWidget(Button.builder(Component.literal("Anti X-Ray settings..."), b -> {
-			this.minecraft.setScreen(new SmpCoreAntiXrayScreen(this, config));
-		}).bounds(x, y, w, 20).build());
-		ax.setTooltip(Tooltip.create(Component.literal("Configure Anti X-Ray engine mode.")));
-		y += 26;
-		Button spec = addRenderableWidget(toggleButton(x, y, w, "Spectator after death", () -> config.death.spectatorAfterDeath, v -> config.death.spectatorAfterDeath = v));
-		spec.setTooltip(Tooltip.create(Component.literal("Hardcore-like: after death, respawn in spectator.")));
+		addToggle(new ItemStack(Items.IRON_SWORD), "PvP", "Enable/disable player vs player damage.", () -> config.gameplay.pvpEnabled, v -> config.gameplay.pvpEnabled = v);
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, 116, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Save"), b -> saveToServer()).bounds(x + 124, this.height - 32, 116, 20).build());
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.DIAMOND_ORE),
+				Component.literal("Anti X-Ray"),
+				Component.literal("Configure Anti X-Ray engine mode."),
+				List.of(Component.literal("Configure Anti X-Ray engine mode.")),
+				() -> this.minecraft.setScreen(new SmpCoreAntiXrayScreen(this, config)),
+				() -> Component.literal(config.gameplay.antiXrayEnabled ? config.gameplay.antiXrayMode.name() : "Disabled")
+		));
+
+		addToggle(new ItemStack(Items.GHAST_TEAR), "Spectator after death", "Hardcore-like: after death, respawn in spectator.", () -> config.death.spectatorAfterDeath, v -> config.death.spectatorAfterDeath = v);
+
+		addToggle(new ItemStack(Items.RED_BED), "One player sleep", "Skip the night when one player sleeps (Overworld).", () -> config.sleep.onePlayerSleep, v -> config.sleep.onePlayerSleep = v);
+		addToggle(new ItemStack(Items.SUNFLOWER), "Clear weather on skip", "If enabled, one player sleep also clears rain/thunder.", () -> config.sleep.clearWeatherOnSkip, v -> config.sleep.clearWeatherOnSkip = v);
+
+		addToggle(new ItemStack(Items.OBSIDIAN), "Nether enabled", "Allow entering the Nether via portals.", () -> config.dimensions.allowNether, v -> config.dimensions.allowNether = v);
+		addToggle(new ItemStack(Items.ENDER_EYE), "End enabled", "Allow entering The End via end portals.", () -> config.dimensions.allowEnd, v -> config.dimensions.allowEnd = v);
+
+		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
+				.bounds(left, this.height - 32, w, 20)
+				.build());
 	}
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
 		graphics.drawCenteredString(font, getTitle(), width / 2, 18, 0xFFFFFF);
+		graphics.drawCenteredString(font, Component.literal("Core server rules and world settings"), width / 2, 30, 0xB9B9B9);
 		super.render(graphics, mouseX, mouseY, partialTick);
+		if (list != null) {
+			List<Component> tooltip = list.consumeHoveredTooltip();
+			if (tooltip != null) {
+				graphics.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
+			}
+		}
 	}
 
-	private Button toggleButton(int x, int y, int w, String label, java.util.function.BooleanSupplier getter, java.util.function.Consumer<Boolean> setter) {
-		return Button.builder(title(label, getter.getAsBoolean()), b -> {
-			boolean next = !getter.getAsBoolean();
-			setter.accept(next);
-			b.setMessage(title(label, next));
-			saveToServer();
-		}).bounds(x, y, w, 20).build();
-	}
-
-	private static Component title(String label, boolean enabled) {
-		return Component.literal(label + ": " + (enabled ? "Enabled" : "Disabled"));
+	private void addToggle(ItemStack icon, String title, String desc, java.util.function.BooleanSupplier getter, java.util.function.Consumer<Boolean> setter) {
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				icon,
+				Component.literal(title),
+				Component.literal(desc),
+				List.of(Component.literal(desc)),
+				() -> {
+					boolean next = !getter.getAsBoolean();
+					setter.accept(next);
+					saveToServer();
+				},
+				() -> Component.literal(getter.getAsBoolean() ? "Enabled" : "Disabled")
+		));
 	}
 }
+
