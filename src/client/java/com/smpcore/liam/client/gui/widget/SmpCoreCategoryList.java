@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class SmpCoreCategoryList extends ObjectSelectionList<SmpCoreCategoryList.Entry> {
 	private final int entryHeight;
@@ -57,13 +58,19 @@ public final class SmpCoreCategoryList extends ObjectSelectionList<SmpCoreCatego
 		private final Component description;
 		private final List<Component> tooltip;
 		private final Runnable onPress;
+		private final Supplier<Component> value;
 
 		public CategoryEntry(ItemStack icon, Component title, Component description, List<Component> tooltip, Runnable onPress) {
+			this(icon, title, description, tooltip, onPress, null);
+		}
+
+		public CategoryEntry(ItemStack icon, Component title, Component description, List<Component> tooltip, Runnable onPress, Supplier<Component> value) {
 			this.icon = icon;
 			this.title = title;
 			this.description = description;
 			this.tooltip = tooltip;
 			this.onPress = onPress;
+			this.value = value;
 		}
 
 		@Override
@@ -91,6 +98,13 @@ public final class SmpCoreCategoryList extends ObjectSelectionList<SmpCoreCatego
 			int descColor = 0xB9B9B9;
 
 			Minecraft mc = Minecraft.getInstance();
+			Component valueText = value == null ? null : value.get();
+			if (valueText != null) {
+				int valueW = mc.font.width(valueText);
+				int valueX = cardX + cardW - 10 - valueW;
+				graphics.drawString(mc.font, valueText, valueX, titleY, hovered ? 0xDCCBFF : 0xC9B6FF, true);
+			}
+
 			graphics.drawString(mc.font, title, textX, titleY, titleColor, true);
 
 			int maxDescWidth = cardX + cardW - 10 - textX;

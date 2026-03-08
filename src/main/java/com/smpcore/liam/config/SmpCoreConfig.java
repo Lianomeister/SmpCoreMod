@@ -40,15 +40,23 @@ public final class SmpCoreConfig {
 
 		public int port = 24454;
 		public String bindAddress = "";
+		public String voiceHost = "";
 
 		public double maxVoiceDistance = 48.0;
 		public double whisperDistance = 24.0;
+		public double broadcastRange = -1.0;
 
 		public VoiceChatCodec codec = VoiceChatCodec.VOIP;
+		public int mtuSize = 1024;
+		public int keepAliveMs = 1000;
+
 		public boolean enableGroups = true;
 		public boolean allowRecording = true;
 		public boolean spectatorInteraction = false;
+		public boolean spectatorPlayerPossession = false;
 		public boolean forceVoiceChat = false;
+		public boolean allowPings = true;
+		public boolean useNatives = true;
 		public int loginTimeoutMs = 10_000;
 	}
 

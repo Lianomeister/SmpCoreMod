@@ -41,12 +41,19 @@ public final class SimpleVoiceChatIntegration {
 		SmpCoreConfig.VoiceChat vc = config.voiceChat;
 		vc.port = getInt(props, "port", vc.port);
 		vc.bindAddress = props.getProperty("bind_address", vc.bindAddress);
+		vc.voiceHost = props.getProperty("voice_host", vc.voiceHost);
 		vc.maxVoiceDistance = getDouble(props, "max_voice_distance", vc.maxVoiceDistance);
 		vc.whisperDistance = getDouble(props, "whisper_distance", vc.whisperDistance);
+		vc.broadcastRange = getDouble(props, "broadcast_range", vc.broadcastRange);
+		vc.mtuSize = getInt(props, "mtu_size", vc.mtuSize);
+		vc.keepAliveMs = getInt(props, "keep_alive", vc.keepAliveMs);
 		vc.enableGroups = getBool(props, "enable_groups", vc.enableGroups);
 		vc.allowRecording = getBool(props, "allow_recording", vc.allowRecording);
 		vc.spectatorInteraction = getBool(props, "spectator_interaction", vc.spectatorInteraction);
+		vc.spectatorPlayerPossession = getBool(props, "spectator_player_possession", vc.spectatorPlayerPossession);
 		vc.forceVoiceChat = getBool(props, "force_voice_chat", vc.forceVoiceChat);
+		vc.allowPings = getBool(props, "allow_pings", vc.allowPings);
+		vc.useNatives = getBool(props, "use_natives", vc.useNatives);
 		vc.loginTimeoutMs = getInt(props, "login_timeout", vc.loginTimeoutMs);
 
 		String codec = props.getProperty("codec", null);
@@ -76,12 +83,19 @@ public final class SimpleVoiceChatIntegration {
 		SmpCoreConfig.VoiceChat vc = config.voiceChat;
 		props.setProperty("port", Integer.toString(vc.port));
 		props.setProperty("bind_address", vc.bindAddress == null ? "" : vc.bindAddress);
+		props.setProperty("voice_host", vc.voiceHost == null ? "" : vc.voiceHost);
 		props.setProperty("max_voice_distance", Double.toString(vc.maxVoiceDistance));
 		props.setProperty("whisper_distance", Double.toString(vc.whisperDistance));
+		props.setProperty("broadcast_range", Double.toString(vc.broadcastRange));
+		props.setProperty("mtu_size", Integer.toString(vc.mtuSize));
+		props.setProperty("keep_alive", Integer.toString(vc.keepAliveMs));
 		props.setProperty("enable_groups", Boolean.toString(vc.enableGroups));
 		props.setProperty("allow_recording", Boolean.toString(vc.allowRecording));
 		props.setProperty("spectator_interaction", Boolean.toString(vc.spectatorInteraction));
+		props.setProperty("spectator_player_possession", Boolean.toString(vc.spectatorPlayerPossession));
 		props.setProperty("force_voice_chat", Boolean.toString(vc.forceVoiceChat));
+		props.setProperty("allow_pings", Boolean.toString(vc.allowPings));
+		props.setProperty("use_natives", Boolean.toString(vc.useNatives));
 		props.setProperty("login_timeout", Integer.toString(vc.loginTimeoutMs));
 		props.setProperty("codec", vc.codec.name().toLowerCase(Locale.ROOT));
 
@@ -149,4 +163,3 @@ public final class SimpleVoiceChatIntegration {
 		};
 	}
 }
-

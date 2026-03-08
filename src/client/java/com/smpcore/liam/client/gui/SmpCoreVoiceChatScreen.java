@@ -1,25 +1,17 @@
 package com.smpcore.liam.client.gui;
 
+import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.util.List;
 
 public final class SmpCoreVoiceChatScreen extends SmpCoreMenuBase {
-	private EditBox port;
-	private EditBox bindAddress;
-	private EditBox maxDistance;
-	private EditBox whisperDistance;
-	private EditBox loginTimeout;
-
-	private Button codec;
-	private Button manage;
-	private Button enableGroups;
-	private Button allowRecording;
-	private Button spectatorInteraction;
-	private Button forceVoiceChat;
+	private SmpCoreCategoryList list;
 
 	public SmpCoreVoiceChatScreen(SmpCoreMenuBase parent, SmpCoreConfig config) {
 		super(Component.literal("Voice Chat"), parent, config);
@@ -27,106 +19,279 @@ public final class SmpCoreVoiceChatScreen extends SmpCoreMenuBase {
 
 	@Override
 	protected void init() {
-		int w = 280;
-		int x = (this.width - w) / 2;
-		int y = 44;
+		int w = Math.min(420, this.width - 40);
+		int left = (this.width - w) / 2;
+		int top = 44;
+		int listBottom = this.height - 44;
 
-		manage = addRenderableWidget(Button.builder(manageTitle(), b -> {
-			config.voiceChat.manageSimpleVoiceChat = !config.voiceChat.manageSimpleVoiceChat;
-			b.setMessage(manageTitle());
-			saveToServer();
-		}).bounds(x, y, w, 20).build());
-		manage.setTooltip(Tooltip.create(Component.literal("If enabled, SMP Core writes Simple Voice Chat server config file.")));
-		y += 26;
+		list = addRenderableWidget(new SmpCoreCategoryList(this.minecraft, w, this.height, top, listBottom, 44));
+		list.setLeftPos(left);
 
-		codec = addRenderableWidget(Button.builder(codecTitle(), b -> {
-			config.voiceChat.codec = next(config.voiceChat.codec);
-			b.setMessage(codecTitle());
-			saveToServer();
-		}).bounds(x, y, w, 20).build());
-		codec.setTooltip(Tooltip.create(Component.literal("Audio codec mode (matches Simple Voice Chat server config).")));
-		y += 26;
+		addToggle(
+				new ItemStack(Items.COMPARATOR),
+				"Manage Simple Voice Chat",
+				"Write settings into config/voicechat/voicechat-server.properties.",
+				List.of(Component.literal("If disabled, SMP Core won't touch Simple Voice Chat config files.")),
+				() -> config.voiceChat.manageSimpleVoiceChat,
+				v -> config.voiceChat.manageSimpleVoiceChat = v
+		);
 
-		port = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Port")));
-		port.setValue(Integer.toString(config.voiceChat.port));
-		port.setTooltip(Tooltip.create(Component.literal("UDP port used by voice chat (default 24454).")));
-		y += 24;
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.BOOK),
+				Component.literal("Codec"),
+				Component.literal("Audio codec mode used by voice chat."),
+				List.of(Component.literal("Cycles Simple Voice Chat 'codec' property.")),
+				() -> {
+					config.voiceChat.codec = next(config.voiceChat.codec);
+					saveToServer();
+				},
+				() -> Component.literal(config.voiceChat.codec.name())
+		));
 
-		bindAddress = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Bind address")));
-		bindAddress.setValue(config.voiceChat.bindAddress == null ? "" : config.voiceChat.bindAddress);
-		bindAddress.setTooltip(Tooltip.create(Component.literal("Optional: IP to bind to (empty = all).")));
-		y += 24;
+		addEditInt(
+				new ItemStack(Items.REPEATER),
+				"Port",
+				"UDP port (24454 default). Use -1 to disable the UDP server.",
+				() -> config.voiceChat.port,
+				v -> config.voiceChat.port = v,
+				-1, 65535
+		);
 
-		maxDistance = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Max voice distance")));
-		maxDistance.setValue(Double.toString(config.voiceChat.maxVoiceDistance));
-		maxDistance.setTooltip(Tooltip.create(Component.literal("How far players can be heard (blocks).")));
-		y += 24;
+		addEditString(
+				new ItemStack(Items.NAME_TAG),
+				"Bind address",
+				"IP/interface to bind to (empty = all).",
+				() -> config.voiceChat.bindAddress,
+				v -> config.voiceChat.bindAddress = v
+		);
 
-		whisperDistance = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Whisper distance")));
-		whisperDistance.setValue(Double.toString(config.voiceChat.whisperDistance));
-		whisperDistance.setTooltip(Tooltip.create(Component.literal("Whisper range (blocks).")));
-		y += 28;
+		addEditString(
+				new ItemStack(Items.ENDER_EYE),
+				"Voice host",
+				"Public hostname/IP for clients (empty = auto).",
+				() -> config.voiceChat.voiceHost,
+				v -> config.voiceChat.voiceHost = v
+		);
 
-		enableGroups = addRenderableWidget(toggle(x, y, w, "Groups", () -> config.voiceChat.enableGroups, v -> config.voiceChat.enableGroups = v));
-		enableGroups.setTooltip(Tooltip.create(Component.literal("Enable/disable voice chat groups.")));
-		y += 22;
+		addEditDouble(
+				new ItemStack(Items.COMPASS),
+				"Max voice distance",
+				"How far players can be heard (blocks).",
+				() -> config.voiceChat.maxVoiceDistance,
+				v -> config.voiceChat.maxVoiceDistance = v,
+				0.0, 1024.0
+		);
 
-		allowRecording = addRenderableWidget(toggle(x, y, w, "Recording", () -> config.voiceChat.allowRecording, v -> config.voiceChat.allowRecording = v));
-		allowRecording.setTooltip(Tooltip.create(Component.literal("Allow recording audio in groups.")));
-		y += 22;
+		addEditDouble(
+				new ItemStack(Items.FEATHER),
+				"Whisper distance",
+				"Whisper range (blocks).",
+				() -> config.voiceChat.whisperDistance,
+				v -> config.voiceChat.whisperDistance = v,
+				0.0, 1024.0
+		);
 
-		spectatorInteraction = addRenderableWidget(toggle(x, y, w, "Spectator interaction", () -> config.voiceChat.spectatorInteraction, v -> config.voiceChat.spectatorInteraction = v));
-		y += 22;
+		addEditDouble(
+				new ItemStack(Items.STRUCTURE_VOID),
+				"Broadcast range",
+				"Range where players are always audible (-1 = max voice distance).",
+				() -> config.voiceChat.broadcastRange,
+				v -> config.voiceChat.broadcastRange = v,
+				-1.0, 1024.0
+		);
 
-		forceVoiceChat = addRenderableWidget(toggle(x, y, w, "Force voice chat", () -> config.voiceChat.forceVoiceChat, v -> config.voiceChat.forceVoiceChat = v));
-		forceVoiceChat.setTooltip(Tooltip.create(Component.literal("If enabled, players without voice chat may be blocked (depends on Simple Voice Chat).")));
-		y += 26;
+		addEditInt(
+				new ItemStack(Items.STRING),
+				"MTU size",
+				"Packet MTU size (bytes). Lower can help with bad networks.",
+				() -> config.voiceChat.mtuSize,
+				v -> config.voiceChat.mtuSize = v,
+				64, 65535
+		);
 
-		loginTimeout = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Login timeout (ms)")));
-		loginTimeout.setValue(Integer.toString(config.voiceChat.loginTimeoutMs));
-		loginTimeout.setTooltip(Tooltip.create(Component.literal("Timeout for voice chat login/handshake.")));
+		addEditInt(
+				new ItemStack(Items.CLOCK),
+				"Keep alive",
+				"Keep-alive interval (ms).",
+				() -> config.voiceChat.keepAliveMs,
+				v -> config.voiceChat.keepAliveMs = v,
+				100, 60_000
+		);
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, 136, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Save"), b -> save()).bounds(x + 144, this.height - 32, 136, 20).build());
+		addToggle(
+				new ItemStack(Items.PAPER),
+				"Groups",
+				"Enable/disable voice chat groups.",
+				List.of(Component.literal("Toggles Simple Voice Chat 'enable_groups'.")),
+				() -> config.voiceChat.enableGroups,
+				v -> config.voiceChat.enableGroups = v
+		);
+
+		addToggle(
+				new ItemStack(Items.WRITABLE_BOOK),
+				"Recording",
+				"Allow recording audio in groups.",
+				List.of(Component.literal("Toggles Simple Voice Chat 'allow_recording'.")),
+				() -> config.voiceChat.allowRecording,
+				v -> config.voiceChat.allowRecording = v
+		);
+
+		addToggle(
+				new ItemStack(Items.SPYGLASS),
+				"Spectator interaction",
+				"Let spectators hear/talk (depending on voice chat behavior).",
+				List.of(Component.literal("Toggles Simple Voice Chat 'spectator_interaction'.")),
+				() -> config.voiceChat.spectatorInteraction,
+				v -> config.voiceChat.spectatorInteraction = v
+		);
+
+		addToggle(
+				new ItemStack(Items.ENDER_PEARL),
+				"Spectator possession",
+				"Let spectators possess players for voice position.",
+				List.of(Component.literal("Toggles Simple Voice Chat 'spectator_player_possession'.")),
+				() -> config.voiceChat.spectatorPlayerPossession,
+				v -> config.voiceChat.spectatorPlayerPossession = v
+		);
+
+		addToggle(
+				new ItemStack(Items.BARRIER),
+				"Force voice chat",
+				"Require voice chat to join/play (mod dependent).",
+				List.of(Component.literal("Toggles Simple Voice Chat 'force_voice_chat'.")),
+				() -> config.voiceChat.forceVoiceChat,
+				v -> config.voiceChat.forceVoiceChat = v
+		);
+
+		addToggle(
+				new ItemStack(Items.BELL),
+				"Allow pings",
+				"Allow voice chat pings/notifications.",
+				List.of(Component.literal("Toggles Simple Voice Chat 'allow_pings'.")),
+				() -> config.voiceChat.allowPings,
+				v -> config.voiceChat.allowPings = v
+		);
+
+		addToggle(
+				new ItemStack(Items.IRON_INGOT),
+				"Use natives",
+				"Enable native audio processing if available.",
+				List.of(Component.literal("Toggles Simple Voice Chat 'use_natives'.")),
+				() -> config.voiceChat.useNatives,
+				v -> config.voiceChat.useNatives = v
+		);
+
+		addEditInt(
+				new ItemStack(Items.TRIPWIRE_HOOK),
+				"Login timeout",
+				"Timeout for voice chat handshake (ms).",
+				() -> config.voiceChat.loginTimeoutMs,
+				v -> config.voiceChat.loginTimeoutMs = v,
+				1000, 120_000
+		);
+
+		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
+				.bounds(left, this.height - 32, w, 20)
+				.build());
 	}
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
 		graphics.drawCenteredString(font, getTitle(), width / 2, 18, 0xFFFFFF);
-		graphics.drawCenteredString(font, Component.literal("Integrates with Simple Voice Chat (server config)"), width / 2, 30, 0xB9B9B9);
+		graphics.drawCenteredString(font, Component.literal("Simple Voice Chat integration (server settings)"), width / 2, 30, 0xB9B9B9);
 		super.render(graphics, mouseX, mouseY, partialTick);
+		if (list != null) {
+			List<Component> tooltip = list.consumeHoveredTooltip();
+			if (tooltip != null) {
+				graphics.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
+			}
+		}
 	}
 
-	private void save() {
-		config.voiceChat.port = parseInt(port.getValue(), config.voiceChat.port);
-		config.voiceChat.bindAddress = bindAddress.getValue();
-		config.voiceChat.maxVoiceDistance = parseDouble(maxDistance.getValue(), config.voiceChat.maxVoiceDistance);
-		config.voiceChat.whisperDistance = parseDouble(whisperDistance.getValue(), config.voiceChat.whisperDistance);
-		config.voiceChat.loginTimeoutMs = parseInt(loginTimeout.getValue(), config.voiceChat.loginTimeoutMs);
-		saveToServer();
+	private void addToggle(ItemStack icon, String title, String desc, List<Component> tooltip, java.util.function.BooleanSupplier getter, java.util.function.Consumer<Boolean> setter) {
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				icon,
+				Component.literal(title),
+				Component.literal(desc),
+				tooltip,
+				() -> {
+					boolean next = !getter.getAsBoolean();
+					setter.accept(next);
+					saveToServer();
+				},
+				() -> Component.literal(getter.getAsBoolean() ? "Enabled" : "Disabled")
+		));
 	}
 
-	private Component manageTitle() {
-		return Component.literal("Manage Simple Voice Chat config: " + (config.voiceChat.manageSimpleVoiceChat ? "Yes" : "No"));
+	private void addEditString(ItemStack icon, String title, String desc, java.util.function.Supplier<String> getter, java.util.function.Consumer<String> setter) {
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				icon,
+				Component.literal(title),
+				Component.literal(desc),
+				List.of(Component.literal(desc)),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal(title),
+						Component.literal("Enter a value"),
+						getter.get(),
+						List.of(Component.literal(desc)),
+						raw -> {
+							setter.accept(raw == null ? "" : raw.trim());
+						})),
+				() -> Component.literal(safe(getter.get()))
+		));
 	}
 
-	private Component codecTitle() {
-		return Component.literal("Codec: " + config.voiceChat.codec.name());
+	private void addEditInt(ItemStack icon, String title, String desc, java.util.function.IntSupplier getter, java.util.function.IntConsumer setter, int min, int max) {
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				icon,
+				Component.literal(title),
+				Component.literal(desc),
+				List.of(Component.literal(desc), Component.literal("Range: " + min + " .. " + max)),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal(title),
+						Component.literal("Enter a number"),
+						Integer.toString(getter.getAsInt()),
+						List.of(Component.literal(desc), Component.literal("Range: " + min + " .. " + max)),
+						raw -> setter.accept(clamp(parseInt(raw, getter.getAsInt()), min, max)))),
+				() -> Component.literal(Integer.toString(getter.getAsInt()))
+		));
 	}
 
-	private Button toggle(int x, int y, int w, String label, java.util.function.BooleanSupplier getter, java.util.function.Consumer<Boolean> setter) {
-		return Button.builder(Component.literal(label + ": " + (getter.getAsBoolean() ? "Enabled" : "Disabled")), b -> {
-			boolean next = !getter.getAsBoolean();
-			setter.accept(next);
-			b.setMessage(Component.literal(label + ": " + (next ? "Enabled" : "Disabled")));
-			saveToServer();
-		}).bounds(x, y, w, 20).build();
+	private void addEditDouble(ItemStack icon, String title, String desc, java.util.function.DoubleSupplier getter, java.util.function.DoubleConsumer setter, double min, double max) {
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				icon,
+				Component.literal(title),
+				Component.literal(desc),
+				List.of(Component.literal(desc), Component.literal("Range: " + min + " .. " + max)),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal(title),
+						Component.literal("Enter a number"),
+						Double.toString(getter.getAsDouble()),
+						List.of(Component.literal(desc), Component.literal("Range: " + min + " .. " + max)),
+						raw -> setter.accept(clamp(parseDouble(raw, getter.getAsDouble()), min, max)))),
+				() -> Component.literal(trimDouble(getter.getAsDouble()))
+		));
 	}
 
-	private static SmpCoreConfig.VoiceChatCodec next(SmpCoreConfig.VoiceChatCodec codec) {
-		SmpCoreConfig.VoiceChatCodec[] values = SmpCoreConfig.VoiceChatCodec.values();
-		return values[(codec.ordinal() + 1) % values.length];
+	private static String safe(String raw) {
+		if (raw == null || raw.isBlank()) {
+			return "(empty)";
+		}
+		return raw.length() > 24 ? raw.substring(0, 24) + "…" : raw;
+	}
+
+	private static String trimDouble(double v) {
+		String s = Double.toString(v);
+		return s.endsWith(".0") ? s.substring(0, s.length() - 2) : s;
+	}
+
+	private static int clamp(int v, int min, int max) {
+		return Math.max(min, Math.min(max, v));
+	}
+
+	private static double clamp(double v, double min, double max) {
+		return Math.max(min, Math.min(max, v));
 	}
 
 	private static int parseInt(String raw, int fallback) {
@@ -143,6 +308,11 @@ public final class SmpCoreVoiceChatScreen extends SmpCoreMenuBase {
 		} catch (Exception ignored) {
 			return fallback;
 		}
+	}
+
+	private static SmpCoreConfig.VoiceChatCodec next(SmpCoreConfig.VoiceChatCodec codec) {
+		SmpCoreConfig.VoiceChatCodec[] values = SmpCoreConfig.VoiceChatCodec.values();
+		return values[(codec.ordinal() + 1) % values.length];
 	}
 }
 
