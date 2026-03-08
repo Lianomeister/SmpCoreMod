@@ -151,6 +151,17 @@ public final class EnchantmentRulesFeature {
 		return changed;
 	}
 
+	public static boolean enforceOnStack(ServerPlayer player, ItemStack stack) {
+		Set<String> currentBanned = bannedEnchants;
+		Map<String, Integer> currentLimits = limits;
+		if (currentBanned.isEmpty() && currentLimits.isEmpty()) {
+			return false;
+		}
+
+		Registry<Enchantment> enchantments = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+		return enforceOnStack(stack, enchantments, currentBanned, currentLimits);
+	}
+
 	private static ItemEnchantments enforceEnchantments(
 			ItemEnchantments original,
 			Registry<Enchantment> enchantments,

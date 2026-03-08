@@ -3,10 +3,10 @@ package com.smpcore.liam.feature;
 import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.util.NoticeCooldowns;
 import com.smpcore.liam.util.TextUtil;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -14,19 +14,17 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class CooldownFeature {
+public final class MaceCooldownFeature {
 	private static boolean registered;
 	private static final NoticeCooldowns NOTICE_COOLDOWNS = new NoticeCooldowns();
 
-	private static final Map<UUID, Map<Item, Long>> nextUseMillisByPlayer = new ConcurrentHashMap<>();
+	private static final Map<UUID, Long> nextUseMillisByPlayer = new ConcurrentHashMap<>();
 
 	private static volatile boolean actionBar;
 	private static volatile long minMillisBetweenNotices;
-	private static volatile long pearlCooldownMs;
-	private static volatile long eGapCooldownMs;
-	private static volatile long windChargeCooldownMs;
+	private static volatile long cooldownMs;
 
-	private CooldownFeature() {
+	private MaceCooldownFeature() {
 	}
 
 	public static void init(SmpCoreConfig config) {
@@ -36,54 +34,55 @@ public final class CooldownFeature {
 		}
 		registered = true;
 
-		UseItemCallback.EVENT.register((player, world, hand) -> {
-			if (!(player instanceof ServerPlayer serverPlayer)) {
+		AttackEntityCallback.EVENT.register((attacker, world, hand, target, hitResult) -> {
+			if (!(attacker instanceof ServerPlayer player)) {
 				return InteractionResult.PASS;
 			}
-
-			ItemStack stack = serverPlayer.getItemInHand(hand);
-			if (stack.isEmpty()) {
-				return InteractionResult.PASS;
-			}
-
-			long cooldownMs = cooldownFor(stack.getItem());
 			if (cooldownMs <= 0) {
 				return InteractionResult.PASS;
 			}
 
-			long now = System.currentTimeMillis();
-			Map<Item, Long> map = nextUseMillisByPlayer.computeIfAbsent(serverPlayer.getUUID(), id -> new ConcurrentHashMap<>());
-			Long next = map.get(stack.getItem());
-			if (next != null && now < next) {
-				notify(serverPlayer, "On cooldown.");
-				return InteractionResult.FAIL;
+			ItemStack stack = player.getMainHandItem();
+			if (!stack.is(Items.MACE)) {
+				return InteractionResult.PASS;
 			}
 
-			map.put(stack.getItem(), now + cooldownMs);
+			long now = System.currentTimeMillis();
+			Long next = nextUseMillisByPlayer.get(player.getUUID());
+			if (next != null && now < next) {
+				notify(player, "Your mace is on cooldown.");
+				return InteractionResult.FAIL;
+			}
 			return InteractionResult.PASS;
+		});
+
+		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, damageSource, baseDamage, finalDamage, blocked) -> {
+			if (cooldownMs <= 0) {
+				return;
+			}
+			if (blocked || finalDamage <= 0F) {
+				return;
+			}
+			if (!(damageSource.getEntity() instanceof ServerPlayer attacker)) {
+				return;
+			}
+			if (!(entity instanceof ServerPlayer)) {
+				return;
+			}
+
+			ItemStack stack = attacker.getMainHandItem();
+			if (!stack.is(Items.MACE)) {
+				return;
+			}
+
+			nextUseMillisByPlayer.put(attacker.getUUID(), System.currentTimeMillis() + cooldownMs);
 		});
 	}
 
 	public static void reload(SmpCoreConfig config) {
 		actionBar = config.messages.actionBar;
 		minMillisBetweenNotices = config.messages.minMillisBetweenNotices;
-
-		pearlCooldownMs = Math.max(0, (long) config.cooldowns.pearlSeconds * 1000L);
-		eGapCooldownMs = Math.max(0, (long) config.cooldowns.eGapSeconds * 1000L);
-		windChargeCooldownMs = Math.max(0, (long) config.cooldowns.windChargeSeconds * 1000L);
-	}
-
-	private static long cooldownFor(Item item) {
-		if (item == Items.ENDER_PEARL) {
-			return pearlCooldownMs;
-		}
-		if (item == Items.ENCHANTED_GOLDEN_APPLE) {
-			return eGapCooldownMs;
-		}
-		if (item == Items.WIND_CHARGE) {
-			return windChargeCooldownMs;
-		}
-		return 0;
+		cooldownMs = Math.max(0, (long) config.cooldowns.maceSeconds * 1000L);
 	}
 
 	private static void notify(ServerPlayer player, String message) {
@@ -97,3 +96,4 @@ public final class CooldownFeature {
 		}
 	}
 }
+

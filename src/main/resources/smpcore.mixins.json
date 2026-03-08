@@ -5,6 +5,7 @@
 	"mixins": [
 		"ExampleMixin",
 		"LivingEntityDamageScaleMixin",
+		"ItemEntityPickupClampMixin",
 		"PlayerElytraCombatMixin"
 	],
 	"injectors": {

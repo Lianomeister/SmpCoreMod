@@ -75,8 +75,9 @@ public final class SmpCoreConfig {
 
 	public static final class Cooldowns {
 		public int pearlSeconds = 0;
-		public int gapSeconds = 0;
+		public int eGapSeconds = 0;
 		public int windChargeSeconds = 0;
+		public int maceSeconds = 0;
 	}
 
 	public static final class Bans {

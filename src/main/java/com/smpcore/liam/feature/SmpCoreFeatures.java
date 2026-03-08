@@ -14,6 +14,7 @@ public final class SmpCoreFeatures {
 		SpectatorAfterDeathFeature.init(config);
 		CombatFeature.init(config);
 		CooldownFeature.init(config);
+		MaceCooldownFeature.init(config);
 		EffectBanFeature.init(config);
 		EnchantmentRulesFeature.init(config);
 	}
@@ -26,6 +27,7 @@ public final class SmpCoreFeatures {
 		SpectatorAfterDeathFeature.reload(config);
 		CombatFeature.reload(config);
 		CooldownFeature.reload(config);
+		MaceCooldownFeature.reload(config);
 		EffectBanFeature.reload(config);
 		EnchantmentRulesFeature.reload(config);
 	}
