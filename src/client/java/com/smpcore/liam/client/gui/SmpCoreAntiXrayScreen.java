@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SmpCoreAntiXrayScreen extends SmpCoreMenuBase {
@@ -42,13 +43,73 @@ public final class SmpCoreAntiXrayScreen extends SmpCoreMenuBase {
 		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
 				new ItemStack(Items.REDSTONE),
 				Component.literal("Engine mode"),
-				Component.literal("Switch between engine modes (implementation WIP)."),
-				List.of(Component.literal("Switch between engine modes (implementation WIP).")),
+				Component.literal("Switch between engine modes."),
+				List.of(Component.literal("Switch between engine modes.")),
 				() -> {
 					config.gameplay.antiXrayMode = next(config.gameplay.antiXrayMode);
 					saveToServer();
 				},
 				() -> Component.literal(config.gameplay.antiXrayMode.name())
+		));
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.AIR),
+				Component.literal("Expose check"),
+				Component.literal("If enabled, visible ores (touching air/water) won't be hidden (BASIC/FAST)."),
+				List.of(Component.literal("If disabled, ores can be hidden even when exposed.")),
+				() -> {
+					config.gameplay.antiXrayExposeCheck = !config.gameplay.antiXrayExposeCheck;
+					saveToServer();
+				},
+				() -> Component.literal(config.gameplay.antiXrayExposeCheck ? "Enabled" : "Disabled")
+		));
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.SPAWNER),
+				Component.literal("Hide spawners"),
+				Component.literal("If enabled, STRICT mode also hides dungeon spawners."),
+				List.of(Component.literal("Only relevant for STRICT/custom lists.")),
+				() -> {
+					config.gameplay.antiXrayHideSpawners = !config.gameplay.antiXrayHideSpawners;
+					saveToServer();
+				},
+				() -> Component.literal(config.gameplay.antiXrayHideSpawners ? "Enabled" : "Disabled")
+		));
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.WRITABLE_BOOK),
+				Component.literal("Custom hidden blocks"),
+				Component.literal("Use a custom block list instead of preset BASIC/FAST/STRICT lists."),
+				List.of(Component.literal("Comma-separated block ids, e.g.: minecraft:diamond_ore, minecraft:ancient_debris")),
+				() -> {
+					config.gameplay.antiXrayUseCustomHiddenBlocks = !config.gameplay.antiXrayUseCustomHiddenBlocks;
+					saveToServer();
+				},
+				() -> Component.literal(config.gameplay.antiXrayUseCustomHiddenBlocks ? "Enabled" : "Disabled")
+		));
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.DIAMOND_ORE),
+				Component.literal("Hidden blocks list"),
+				Component.literal("Edit the custom hidden blocks list (comma-separated)."),
+				List.of(Component.literal("Only used when 'Custom hidden blocks' is enabled.")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Hidden blocks list"),
+						Component.literal("Comma-separated block ids"),
+						String.join(", ", config.gameplay.antiXrayCustomHiddenBlocks),
+						List.of(Component.literal("Example: minecraft:diamond_ore, minecraft:ancient_debris")),
+						txt -> {
+							String[] parts = txt.split(",");
+							ArrayList<String> ids = new ArrayList<>();
+							for (String p : parts) {
+								String id = p.trim();
+								if (!id.isEmpty()) {
+									ids.add(id);
+								}
+							}
+							config.gameplay.antiXrayCustomHiddenBlocks = ids;
+						})),
+				() -> Component.literal(config.gameplay.antiXrayCustomHiddenBlocks.isEmpty() ? "Empty" : (config.gameplay.antiXrayCustomHiddenBlocks.size() + " blocks"))
 		));
 
 		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
@@ -73,4 +134,3 @@ public final class SmpCoreAntiXrayScreen extends SmpCoreMenuBase {
 		return values[(mode.ordinal() + 1) % values.length];
 	}
 }
-

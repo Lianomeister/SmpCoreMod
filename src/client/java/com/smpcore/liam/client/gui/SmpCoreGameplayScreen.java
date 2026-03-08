@@ -104,6 +104,9 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 						})),
 				() -> Component.literal(trimDouble(config.messages.proximityChatRadius) + " blocks")
 		));
+		addToggle(new ItemStack(Items.COMMAND_BLOCK), "Proximity affects commands", "Apply proximity chat to /say and /me broadcasts.", () -> config.messages.proximityChatAffectsCommands, v -> config.messages.proximityChatAffectsCommands = v);
+		addToggle(new ItemStack(Items.SPYGLASS), "Proximity include spectators", "If enabled, spectators can receive proximity chat.", () -> config.messages.proximityChatIncludeSpectators, v -> config.messages.proximityChatIncludeSpectators = v);
+		addToggle(new ItemStack(Items.DIAMOND), "Proximity ops bypass", "If enabled, ops always receive proximity chat.", () -> config.messages.proximityChatOpsBypass, v -> config.messages.proximityChatOpsBypass = v);
 
 		addToggle(new ItemStack(Items.NOTE_BLOCK), "Custom death sound", "Plays a custom sound when a player dies.", () -> config.death.customDeathSoundEnabled, v -> config.death.customDeathSoundEnabled = v);
 		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(

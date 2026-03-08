@@ -99,13 +99,22 @@ public abstract class LevelChunkSectionAntiXrayMixin {
 			return;
 		}
 
-		Set<Block> hidden = hiddenSet(mode);
+		Set<Block> hidden = AntiXrayFeature.useCustomHiddenBlocks() ? AntiXrayFeature.customHiddenBlocks() : hiddenSet(mode);
 		if (hidden.isEmpty()) {
 			return;
 		}
+		if (!AntiXrayFeature.hideSpawners() && hidden.contains(Blocks.SPAWNER)) {
+			java.util.HashSet<Block> copy = new java.util.HashSet<>(hidden);
+			copy.remove(Blocks.SPAWNER);
+			hidden = copy;
+			if (hidden.isEmpty()) {
+				return;
+			}
+		}
+		final Set<Block> hiddenFinal = hidden;
 
 		// Fast bail-out: don't allocate/copy if this section can't contain anything we hide.
-		if (!states.maybeHas(state -> hidden.contains(state.getBlock()))) {
+		if (!states.maybeHas(state -> hiddenFinal.contains(state.getBlock()))) {
 			return;
 		}
 
@@ -116,7 +125,7 @@ public abstract class LevelChunkSectionAntiXrayMixin {
 			for (int z = 0; z < 16; z++) {
 				for (int x = 0; x < 16; x++) {
 					BlockState original = states.get(x, y, z);
-					out.set(x, y, z, obfuscate(original, x, y, z, mode, hidden, ctx.level()));
+					out.set(x, y, z, obfuscate(original, x, y, z, mode, hiddenFinal, ctx.level()));
 				}
 			}
 		}
@@ -131,7 +140,7 @@ public abstract class LevelChunkSectionAntiXrayMixin {
 		if (!hidden.contains(block)) {
 			return original;
 		}
-		if (mode != SmpCoreConfig.AntiXrayMode.STRICT && isExposedToAirOrFluid(x, y, z, mode)) {
+		if (mode != SmpCoreConfig.AntiXrayMode.STRICT && AntiXrayFeature.exposeCheck() && isExposedToAirOrFluid(x, y, z, mode)) {
 			return original;
 		}
 		return replacementFor(original, level);
@@ -178,4 +187,3 @@ public abstract class LevelChunkSectionAntiXrayMixin {
 		};
 	}
 }
-

@@ -2,6 +2,7 @@ package com.smpcore.liam.mixin;
 
 import com.smpcore.liam.combat.CombatState;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,13 +39,17 @@ public class LivingEntityDamageScaleMixin {
 		}
 
 		if (CombatState.immortalityEnabled()) {
+			if (CombatState.immortalityAllowVoidDeath() && source.is(DamageTypes.FELL_OUT_OF_WORLD)) {
+				return (float) out;
+			}
 			Player self = (Player) (Object) this;
 			boolean holdingTotem =
 					self.getMainHandItem().is(Items.TOTEM_OF_UNDYING)
 							|| self.getOffhandItem().is(Items.TOTEM_OF_UNDYING);
 			if (!holdingTotem) {
 				float health = ((LivingEntity) (Object) this).getHealth();
-				double maxDamage = Math.max(0.0, health - 1.0);
+				double minHealth = CombatState.immortalityMinHealth();
+				double maxDamage = Math.max(0.0, health - minHealth);
 				out = Math.min(out, maxDamage);
 			}
 		}

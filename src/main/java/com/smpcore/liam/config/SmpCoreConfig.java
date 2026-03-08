@@ -31,12 +31,32 @@ public final class SmpCoreConfig {
 		 * Radius in blocks for proximity chat.
 		 */
 		public double proximityChatRadius = 64.0;
+
+		/**
+		 * If enabled, proximity chat also applies to server broadcast chat coming from commands
+		 * (e.g. /say, /me). If disabled, those remain global.
+		 */
+		public boolean proximityChatAffectsCommands = true;
+
+		/**
+		 * If enabled, spectators can receive proximity chat.
+		 */
+		public boolean proximityChatIncludeSpectators = false;
+
+		/**
+		 * If enabled, ops always receive proximity chat regardless of range.
+		 */
+		public boolean proximityChatOpsBypass = false;
 	}
 
 	public static final class Gameplay {
 		public boolean pvpEnabled = true;
 		public boolean antiXrayEnabled = false;
 		public AntiXrayMode antiXrayMode = AntiXrayMode.BASIC;
+		public boolean antiXrayExposeCheck = true;
+		public boolean antiXrayHideSpawners = true;
+		public boolean antiXrayUseCustomHiddenBlocks = false;
+		public List<String> antiXrayCustomHiddenBlocks = new ArrayList<>();
 
 		public boolean invisibilityAnonymousKills = true;
 		public boolean wardenHeartDrop = true;
@@ -137,9 +157,19 @@ public final class SmpCoreConfig {
 		public double maceDamageCap = 0.0;
 
 		/**
-		 * If enabled, players cannot be reduced below half a heart (1 HP) unless holding a totem.
+		 * If enabled, players cannot be reduced below {@link #immortalityMinHealth} unless holding a totem.
 		 */
 		public boolean immortalityEnabled = false;
+
+		/**
+		 * Minimum health to keep players at when immortality is enabled (1.0 = half a heart).
+		 */
+		public double immortalityMinHealth = 1.0;
+
+		/**
+		 * If enabled, void damage can still kill players even with immortality.
+		 */
+		public boolean immortalityAllowVoidDeath = true;
 
 		public int shieldCooldownSeconds = 0;
 		public boolean maceStunsShield = false;

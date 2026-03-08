@@ -36,6 +36,9 @@ public abstract class PlayerListProximityChatMixin {
 		if (!ProximityChatFeature.enabled()) {
 			return;
 		}
+		if (!ProximityChatFeature.affectsCommands()) {
+			return;
+		}
 		if (source == null) {
 			return;
 		}
@@ -47,4 +50,3 @@ public abstract class PlayerListProximityChatMixin {
 		ci.cancel();
 	}
 }
-
