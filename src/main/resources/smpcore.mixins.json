@@ -4,6 +4,8 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"ExampleMixin",
+		"AnonymousInvisDeathMessageMixin",
+		"BreachSwapBanPacketMixin",
 		"EndPortalBlockDimensionMixin",
 		"LivingEntityDamageScaleMixin",
 		"ItemEntityPickupClampMixin",

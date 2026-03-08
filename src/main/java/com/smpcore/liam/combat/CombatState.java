@@ -13,6 +13,7 @@ public final class CombatState {
 	private static volatile long tagMillis = 15_000L;
 	private static volatile boolean antiRestock = true;
 	private static volatile boolean antiElytra = true;
+	private static volatile double playerDamageMultiplier = 1.0;
 	private static volatile double pvpDamageMultiplier = 1.0;
 
 	private CombatState() {
@@ -23,6 +24,7 @@ public final class CombatState {
 		tagMillis = Math.max(0, (long) config.combat.tagSeconds * 1000L);
 		antiRestock = config.combat.antiRestock;
 		antiElytra = config.combat.antiElytra;
+		playerDamageMultiplier = config.combat.playerDamageMultiplier;
 		pvpDamageMultiplier = config.combat.pvpDamageMultiplier;
 	}
 
@@ -60,5 +62,8 @@ public final class CombatState {
 	public static double pvpDamageMultiplier() {
 		return enabled ? pvpDamageMultiplier : 1.0;
 	}
-}
 
+	public static double playerDamageMultiplier() {
+		return enabled ? playerDamageMultiplier : 1.0;
+	}
+}

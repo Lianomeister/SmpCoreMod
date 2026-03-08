@@ -1,17 +1,17 @@
 package com.smpcore.liam.client.gui;
 
+import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.util.List;
 
 public final class SmpCoreCooldownsScreen extends SmpCoreMenuBase {
-	private EditBox pearlSeconds;
-	private EditBox eGapSeconds;
-	private EditBox windChargeSeconds;
-	private EditBox maceSeconds;
+	private SmpCoreCategoryList list;
 
 	public SmpCoreCooldownsScreen(SmpCoreMenuBase parent, SmpCoreConfig config) {
 		super(Component.literal("Cooldowns"), parent, config);
@@ -19,46 +19,54 @@ public final class SmpCoreCooldownsScreen extends SmpCoreMenuBase {
 
 	@Override
 	protected void init() {
-		int w = 260;
-		int x = (this.width - w) / 2;
-		int y = 52;
+		int w = Math.min(420, this.width - 40);
+		int left = (this.width - w) / 2;
+		int top = 44;
+		int listBottom = this.height - 44;
 
-		pearlSeconds = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Pearl cooldown (s)")));
-		pearlSeconds.setValue(Integer.toString(config.cooldowns.pearlSeconds));
-		pearlSeconds.setTooltip(Tooltip.create(Component.literal("Cooldown for ender pearls.")));
-		y += 26;
+		list = addRenderableWidget(new SmpCoreCategoryList(this.minecraft, w, this.height, top, listBottom, 44));
+		list.setLeftPos(left);
 
-		eGapSeconds = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("E-Gap cooldown (s)")));
-		eGapSeconds.setValue(Integer.toString(config.cooldowns.eGapSeconds));
-		eGapSeconds.setTooltip(Tooltip.create(Component.literal("Cooldown for enchanted golden apples.")));
-		y += 26;
+		addSeconds(new ItemStack(Items.ENDER_PEARL), "Pearl cooldown", "Cooldown for ender pearls.", () -> config.cooldowns.pearlSeconds, v -> config.cooldowns.pearlSeconds = v);
+		addSeconds(new ItemStack(Items.ENCHANTED_GOLDEN_APPLE), "E-Gap cooldown", "Cooldown for enchanted golden apples.", () -> config.cooldowns.eGapSeconds, v -> config.cooldowns.eGapSeconds = v);
+		addSeconds(new ItemStack(Items.WIND_CHARGE), "Wind charge cooldown", "Cooldown for wind charges.", () -> config.cooldowns.windChargeSeconds, v -> config.cooldowns.windChargeSeconds = v);
+		addSeconds(new ItemStack(Items.MACE), "Mace cooldown", "Cooldown after the mace deals damage (blocked hits don't trigger it).", () -> config.cooldowns.maceSeconds, v -> config.cooldowns.maceSeconds = v);
+		addSeconds(new ItemStack(Items.TRIDENT), "Riptide cooldown", "Cooldown for using Riptide tridents (applies when starting to use the trident).", () -> config.cooldowns.riptideSeconds, v -> config.cooldowns.riptideSeconds = v);
 
-		windChargeSeconds = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Wind charge cooldown (s)")));
-		windChargeSeconds.setValue(Integer.toString(config.cooldowns.windChargeSeconds));
-		windChargeSeconds.setTooltip(Tooltip.create(Component.literal("Cooldown for wind charges.")));
-		y += 26;
-
-		maceSeconds = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Mace cooldown (s)")));
-		maceSeconds.setValue(Integer.toString(config.cooldowns.maceSeconds));
-		maceSeconds.setTooltip(Tooltip.create(Component.literal("Cooldown applies only after the mace deals damage (blocked hits don't trigger it).")));
-
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, 126, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Save"), b -> save()).bounds(x + 134, this.height - 32, 126, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
+				.bounds(left, this.height - 32, w, 20)
+				.build());
 	}
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
 		graphics.drawCenteredString(font, getTitle(), width / 2, 18, 0xFFFFFF);
+		graphics.drawCenteredString(font, Component.literal("Item and ability cooldowns"), width / 2, 30, 0xB9B9B9);
 		super.render(graphics, mouseX, mouseY, partialTick);
+		if (list != null) {
+			List<Component> tooltip = list.consumeHoveredTooltip();
+			if (tooltip != null) {
+				graphics.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
+			}
+		}
 	}
 
-	private void save() {
-		config.cooldowns.pearlSeconds = parseInt(pearlSeconds.getValue(), config.cooldowns.pearlSeconds);
-		config.cooldowns.eGapSeconds = parseInt(eGapSeconds.getValue(), config.cooldowns.eGapSeconds);
-		config.cooldowns.windChargeSeconds = parseInt(windChargeSeconds.getValue(), config.cooldowns.windChargeSeconds);
-		config.cooldowns.maceSeconds = parseInt(maceSeconds.getValue(), config.cooldowns.maceSeconds);
-		saveToServer();
+	private void addSeconds(ItemStack icon, String title, String desc, java.util.function.IntSupplier getter, java.util.function.IntConsumer setter) {
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				icon,
+				Component.literal(title),
+				Component.literal(desc),
+				List.of(Component.literal(desc), Component.literal("0 = disabled")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal(title),
+						Component.literal("Enter seconds (0 disables)"),
+						Integer.toString(getter.getAsInt()),
+						List.of(Component.literal(desc), Component.literal("0 = disabled")),
+						raw -> setter.accept(Math.max(0, parseInt(raw, getter.getAsInt())))
+				)),
+				() -> Component.literal(getter.getAsInt() + "s")
+		));
 	}
 
 	private static int parseInt(String raw, int fallback) {
@@ -69,3 +77,4 @@ public final class SmpCoreCooldownsScreen extends SmpCoreMenuBase {
 		}
 	}
 }
+

@@ -46,6 +46,9 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		addToggle(new ItemStack(Items.OBSIDIAN), "Nether enabled", "Allow entering the Nether via portals.", () -> config.dimensions.allowNether, v -> config.dimensions.allowNether = v);
 		addToggle(new ItemStack(Items.ENDER_EYE), "End enabled", "Allow entering The End via end portals.", () -> config.dimensions.allowEnd, v -> config.dimensions.allowEnd = v);
 
+		addToggle(new ItemStack(Items.POTION), "Anonymous invis kills", "If an invisible player kills someone, their name is hidden in the death message.", () -> config.gameplay.invisibilityAnonymousKills, v -> config.gameplay.invisibilityAnonymousKills = v);
+		addToggle(new ItemStack(Items.HEART_OF_THE_SEA), "Warden heart drop", "Killing a warden drops a Warden Heart (usable in custom recipes).", () -> config.gameplay.wardenHeartDrop, v -> config.gameplay.wardenHeartDrop = v);
+
 		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
 				.bounds(left, this.height - 32, w, 20)
 				.build());
@@ -80,4 +83,3 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		));
 	}
 }
-

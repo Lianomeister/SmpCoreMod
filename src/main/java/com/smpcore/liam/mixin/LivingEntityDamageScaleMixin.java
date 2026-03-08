@@ -13,19 +13,24 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public class LivingEntityDamageScaleMixin {
 	@ModifyVariable(method = "hurtServer", at = @At("HEAD"), argsOnly = true, ordinal = 0)
 	private float smpcore$scalePvpDamage(float amount, ServerLevel level, DamageSource source) {
-		double mult = CombatState.pvpDamageMultiplier();
-		if (mult == 1.0) {
-			return amount;
-		}
-
 		if (!((Object) this instanceof Player)) {
 			return amount;
 		}
-		if (!(source.getEntity() instanceof Player)) {
-			return amount;
+
+		double out = amount;
+
+		double playerMult = CombatState.playerDamageMultiplier();
+		if (playerMult != 1.0) {
+			out *= playerMult;
 		}
 
-		return (float) (amount * mult);
+		if (source.getEntity() instanceof Player) {
+			double pvpMult = CombatState.pvpDamageMultiplier();
+			if (pvpMult != 1.0) {
+				out *= pvpMult;
+			}
+		}
+
+		return (float) out;
 	}
 }
-

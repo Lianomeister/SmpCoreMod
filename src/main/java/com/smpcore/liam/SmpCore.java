@@ -5,6 +5,7 @@ import com.smpcore.liam.config.ConfigJson;
 import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.feature.SmpCoreFeatures;
 import com.smpcore.liam.integration.SimpleVoiceChatIntegration;
+import com.smpcore.liam.item.SmpCoreItems;
 import com.smpcore.liam.net.SmpCorePayloads;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -28,6 +29,7 @@ public class SmpCore implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		SmpCoreItems.registerAll();
 		config = ConfigManager.loadOrCreate();
 		SmpCoreFeatures.initAll(config);
 		SmpCorePayloads.register();

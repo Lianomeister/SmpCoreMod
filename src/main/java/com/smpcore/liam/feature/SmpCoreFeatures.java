@@ -15,8 +15,11 @@ public final class SmpCoreFeatures {
 		PvpFeature.init(config);
 		SpectatorAfterDeathFeature.init(config);
 		CombatFeature.init(config);
+		ShieldTweaksFeature.init(config);
+		BreachSwapBanFeature.init(config);
 		CooldownFeature.init(config);
 		MaceCooldownFeature.init(config);
+		WardenHeartFeature.init(config);
 		EffectBanFeature.init(config);
 		EnchantmentRulesFeature.init(config);
 	}
@@ -30,8 +33,11 @@ public final class SmpCoreFeatures {
 		PvpFeature.reload(config);
 		SpectatorAfterDeathFeature.reload(config);
 		CombatFeature.reload(config);
+		ShieldTweaksFeature.reload(config);
+		BreachSwapBanFeature.reload(config);
 		CooldownFeature.reload(config);
 		MaceCooldownFeature.reload(config);
+		WardenHeartFeature.reload(config);
 		EffectBanFeature.reload(config);
 		EnchantmentRulesFeature.reload(config);
 	}

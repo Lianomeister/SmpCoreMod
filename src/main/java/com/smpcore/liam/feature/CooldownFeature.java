@@ -4,11 +4,16 @@ import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.util.NoticeCooldowns;
 import com.smpcore.liam.util.TextUtil;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.util.Map;
 import java.util.UUID;
@@ -25,6 +30,7 @@ public final class CooldownFeature {
 	private static volatile long pearlCooldownMs;
 	private static volatile long eGapCooldownMs;
 	private static volatile long windChargeCooldownMs;
+	private static volatile long riptideCooldownMs;
 
 	private CooldownFeature() {
 	}
@@ -46,7 +52,7 @@ public final class CooldownFeature {
 				return InteractionResult.PASS;
 			}
 
-			long cooldownMs = cooldownFor(stack.getItem());
+			long cooldownMs = cooldownFor(serverPlayer, stack);
 			if (cooldownMs <= 0) {
 				return InteractionResult.PASS;
 			}
@@ -71,9 +77,11 @@ public final class CooldownFeature {
 		pearlCooldownMs = Math.max(0, (long) config.cooldowns.pearlSeconds * 1000L);
 		eGapCooldownMs = Math.max(0, (long) config.cooldowns.eGapSeconds * 1000L);
 		windChargeCooldownMs = Math.max(0, (long) config.cooldowns.windChargeSeconds * 1000L);
+		riptideCooldownMs = Math.max(0, (long) config.cooldowns.riptideSeconds * 1000L);
 	}
 
-	private static long cooldownFor(Item item) {
+	private static long cooldownFor(ServerPlayer player, ItemStack stack) {
+		Item item = stack.getItem();
 		if (item == Items.ENDER_PEARL) {
 			return pearlCooldownMs;
 		}
@@ -82,6 +90,14 @@ public final class CooldownFeature {
 		}
 		if (item == Items.WIND_CHARGE) {
 			return windChargeCooldownMs;
+		}
+		if (item == Items.TRIDENT && riptideCooldownMs > 0) {
+			Registry<Enchantment> reg = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+			Enchantment riptide = reg.getValueOrThrow(Enchantments.RIPTIDE);
+			int lvl = EnchantmentHelper.getItemEnchantmentLevel(reg.wrapAsHolder(riptide), stack);
+			if (lvl > 0) {
+				return riptideCooldownMs;
+			}
 		}
 		return 0;
 	}

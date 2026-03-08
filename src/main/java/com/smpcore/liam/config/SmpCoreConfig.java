@@ -26,6 +26,9 @@ public final class SmpCoreConfig {
 		public boolean pvpEnabled = true;
 		public boolean antiXrayEnabled = false;
 		public AntiXrayMode antiXrayMode = AntiXrayMode.BASIC;
+
+		public boolean invisibilityAnonymousKills = true;
+		public boolean wardenHeartDrop = true;
 	}
 
 	public static final class Dimensions {
@@ -88,9 +91,21 @@ public final class SmpCoreConfig {
 		public boolean antiElytra = true;
 
 		/**
+		 * Multiplies ALL damage taken by players. Set 1.0 for vanilla behavior.
+		 */
+		public double playerDamageMultiplier = 1.0;
+
+		/**
 		 * PvP-only damage multiplier. Set 1.0 for vanilla behavior.
 		 */
 		public double pvpDamageMultiplier = 1.0;
+
+		public int shieldCooldownSeconds = 0;
+		public boolean maceStunsShield = false;
+		public int maceShieldStunSeconds = 0;
+
+		public boolean banBreachSwapping = false;
+		public int breachSwapLockMs = 750;
 	}
 
 	public static final class Cooldowns {
@@ -98,6 +113,7 @@ public final class SmpCoreConfig {
 		public int eGapSeconds = 0;
 		public int windChargeSeconds = 0;
 		public int maceSeconds = 0;
+		public int riptideSeconds = 0;
 	}
 
 	public static final class Bans {
