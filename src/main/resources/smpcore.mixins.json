@@ -13,6 +13,7 @@
 		"LivingEntityDamageScaleMixin",
 		"ItemEntityPickupClampMixin",
 		"NetherPortalBlockDimensionMixin",
+		"PlayerListProximityChatMixin",
 		"PlayerElytraCombatMixin"
 	],
 	"injectors": {

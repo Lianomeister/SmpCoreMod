@@ -21,6 +21,16 @@ public final class SmpCoreConfig {
 	public static final class Messages {
 		public boolean actionBar = true;
 		public long minMillisBetweenNotices = 1500;
+
+		/**
+		 * If enabled, player chat is only sent to players within {@link #proximityChatRadius} blocks.
+		 */
+		public boolean proximityChatEnabled = false;
+
+		/**
+		 * Radius in blocks for proximity chat.
+		 */
+		public double proximityChatRadius = 64.0;
 	}
 
 	public static final class Gameplay {
@@ -126,6 +136,11 @@ public final class SmpCoreConfig {
 		 */
 		public double maceDamageCap = 0.0;
 
+		/**
+		 * If enabled, players cannot be reduced below half a heart (1 HP) unless holding a totem.
+		 */
+		public boolean immortalityEnabled = false;
+
 		public int shieldCooldownSeconds = 0;
 		public boolean maceStunsShield = false;
 		public int maceShieldStunSeconds = 0;
@@ -170,6 +185,11 @@ public final class SmpCoreConfig {
 
 	public static final class Death {
 		public boolean spectatorAfterDeath = false;
+
+		public boolean customDeathSoundEnabled = false;
+		public String customDeathSoundId = "minecraft:entity.player.death";
+		public double customDeathSoundVolume = 1.0;
+		public double customDeathSoundPitch = 1.0;
 	}
 
 	public static final class Effects {

@@ -36,6 +36,7 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 		addDouble(new ItemStack(Items.IRON_SWORD), "Player damage multiplier", "Scales ALL damage taken by players. Example: 10.0 = 10x.", () -> config.combat.playerDamageMultiplier, v -> config.combat.playerDamageMultiplier = v, 0.0, 100.0);
 		addDouble(new ItemStack(Items.NETHERITE_SWORD), "PvP damage multiplier", "Scales only PvP damage. Example: 10.0 = 10x.", () -> config.combat.pvpDamageMultiplier, v -> config.combat.pvpDamageMultiplier = v, 0.0, 100.0);
 		addDoubleRaw(new ItemStack(Items.MACE), "Mace damage cap", "Caps mace damage dealt to players (0 = disabled). 2.0 = 1 heart.", () -> config.combat.maceDamageCap, v -> config.combat.maceDamageCap = v, 0.0, 2048.0, "dmg");
+		addToggle(new ItemStack(Items.TOTEM_OF_UNDYING), "Immortality", "Can't drop below half a heart unless holding a totem (then it can pop).", () -> config.combat.immortalityEnabled, v -> config.combat.immortalityEnabled = v);
 
 		addInt(new ItemStack(Items.SHIELD), "Shield cooldown (block)", "Adds a shield cooldown whenever damage is blocked.", () -> config.combat.shieldCooldownSeconds, v -> config.combat.shieldCooldownSeconds = v, 0, 60, "s");
 		addToggle(new ItemStack(Items.MACE), "Mace stuns shield", "If the shield blocks a mace hit, the shield gets stunned.", () -> config.combat.maceStunsShield, v -> config.combat.maceStunsShield = v);

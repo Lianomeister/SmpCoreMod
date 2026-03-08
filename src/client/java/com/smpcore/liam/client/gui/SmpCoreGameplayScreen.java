@@ -85,6 +85,77 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		addToggle(new ItemStack(Items.OBSIDIAN), "Nether enabled", "Allow entering the Nether via portals.", () -> config.dimensions.allowNether, v -> config.dimensions.allowNether = v);
 		addToggle(new ItemStack(Items.ENDER_EYE), "End enabled", "Allow entering The End via end portals.", () -> config.dimensions.allowEnd, v -> config.dimensions.allowEnd = v);
 
+		addToggle(new ItemStack(Items.OAK_SIGN), "Proximity chat", "Only players near you can see your messages.", () -> config.messages.proximityChatEnabled, v -> config.messages.proximityChatEnabled = v);
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.COMPASS),
+				Component.literal("Proximity chat radius"),
+				Component.literal("Radius in blocks for proximity chat."),
+				List.of(Component.literal("Example: 64"), Component.literal("Set <= 0 to effectively disable radius.")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Proximity chat radius"),
+						Component.literal("Radius in blocks"),
+						Double.toString(config.messages.proximityChatRadius),
+						List.of(Component.literal("Example: 64")),
+						txt -> {
+							try {
+								config.messages.proximityChatRadius = Math.max(0.0, Double.parseDouble(txt.trim()));
+							} catch (Exception ignored) {
+							}
+						})),
+				() -> Component.literal(trimDouble(config.messages.proximityChatRadius) + " blocks")
+		));
+
+		addToggle(new ItemStack(Items.NOTE_BLOCK), "Custom death sound", "Plays a custom sound when a player dies.", () -> config.death.customDeathSoundEnabled, v -> config.death.customDeathSoundEnabled = v);
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.JUKEBOX),
+				Component.literal("Death sound id"),
+				Component.literal("Sound event id to play on death."),
+				List.of(Component.literal("Example: minecraft:entity.wither.spawn")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Death sound id"),
+						Component.literal("Sound event id"),
+						config.death.customDeathSoundId,
+						List.of(Component.literal("Example: minecraft:entity.player.death")),
+						txt -> config.death.customDeathSoundId = txt.trim())),
+				() -> Component.literal(config.death.customDeathSoundId)
+		));
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.AMETHYST_SHARD),
+				Component.literal("Death sound volume"),
+				Component.literal("Volume for the custom death sound."),
+				List.of(Component.literal("Example: 1.0")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Death sound volume"),
+						Component.literal("Volume"),
+						Double.toString(config.death.customDeathSoundVolume),
+						List.of(Component.literal("Example: 1.0")),
+						txt -> {
+							try {
+								config.death.customDeathSoundVolume = Math.max(0.0, Double.parseDouble(txt.trim()));
+							} catch (Exception ignored) {
+							}
+						})),
+				() -> Component.literal(trimDouble(config.death.customDeathSoundVolume))
+		));
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.ECHO_SHARD),
+				Component.literal("Death sound pitch"),
+				Component.literal("Pitch for the custom death sound."),
+				List.of(Component.literal("Example: 1.0")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Death sound pitch"),
+						Component.literal("Pitch"),
+						Double.toString(config.death.customDeathSoundPitch),
+						List.of(Component.literal("Example: 1.0")),
+						txt -> {
+							try {
+								config.death.customDeathSoundPitch = Math.max(0.0, Double.parseDouble(txt.trim()));
+							} catch (Exception ignored) {
+							}
+						})),
+				() -> Component.literal(trimDouble(config.death.customDeathSoundPitch))
+		));
+
 		addToggle(new ItemStack(Items.POTION), "Anonymous invis kills", "If an invisible player kills someone, their name is hidden in the death message.", () -> config.gameplay.invisibilityAnonymousKills, v -> config.gameplay.invisibilityAnonymousKills = v);
 		addToggle(new ItemStack(Items.HEART_OF_THE_SEA), "Warden heart drop", "Killing a warden drops a Warden Heart (usable in custom recipes).", () -> config.gameplay.wardenHeartDrop, v -> config.gameplay.wardenHeartDrop = v);
 
@@ -118,5 +189,10 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 				},
 				() -> Component.literal(getter.getAsBoolean() ? "Enabled" : "Disabled")
 		));
+	}
+
+	private static String trimDouble(double v) {
+		String s = Double.toString(v);
+		return s.endsWith(".0") ? s.substring(0, s.length() - 2) : s;
 	}
 }

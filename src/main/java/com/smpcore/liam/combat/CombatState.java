@@ -16,6 +16,7 @@ public final class CombatState {
 	private static volatile double playerDamageMultiplier = 1.0;
 	private static volatile double pvpDamageMultiplier = 1.0;
 	private static volatile double maceDamageCap = 0.0;
+	private static volatile boolean immortalityEnabled = false;
 
 	private CombatState() {
 	}
@@ -28,6 +29,7 @@ public final class CombatState {
 		playerDamageMultiplier = config.combat.playerDamageMultiplier;
 		pvpDamageMultiplier = config.combat.pvpDamageMultiplier;
 		maceDamageCap = Math.max(0.0, config.combat.maceDamageCap);
+		immortalityEnabled = config.combat.immortalityEnabled;
 	}
 
 	public static void tag(UUID playerId) {
@@ -71,5 +73,9 @@ public final class CombatState {
 
 	public static double maceDamageCap() {
 		return enabled ? maceDamageCap : 0.0;
+	}
+
+	public static boolean immortalityEnabled() {
+		return enabled && immortalityEnabled;
 	}
 }

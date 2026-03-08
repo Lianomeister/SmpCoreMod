@@ -8,8 +8,10 @@ public final class SmpCoreFeatures {
 
 	public static void initAll(SmpCoreConfig config) {
 		AntiXrayFeature.init(config);
+		ProximityChatFeature.init(config);
 		DimensionRulesFeature.init(config);
 		OnePlayerSleepFeature.init(config);
+		DeathSoundFeature.init(config);
 		BedAndAnchorBanFeature.init(config);
 		EnderChestLockFeature.init(config);
 		ItemBanFeature.init(config);
@@ -28,8 +30,10 @@ public final class SmpCoreFeatures {
 
 	public static void reloadAll(SmpCoreConfig config) {
 		AntiXrayFeature.reload(config);
+		ProximityChatFeature.reload(config);
 		DimensionRulesFeature.reload(config);
 		OnePlayerSleepFeature.reload(config);
+		DeathSoundFeature.reload(config);
 		BedAndAnchorBanFeature.reload(config);
 		EnderChestLockFeature.reload(config);
 		ItemBanFeature.reload(config);

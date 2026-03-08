@@ -37,6 +37,18 @@ public class LivingEntityDamageScaleMixin {
 			}
 		}
 
+		if (CombatState.immortalityEnabled()) {
+			Player self = (Player) (Object) this;
+			boolean holdingTotem =
+					self.getMainHandItem().is(Items.TOTEM_OF_UNDYING)
+							|| self.getOffhandItem().is(Items.TOTEM_OF_UNDYING);
+			if (!holdingTotem) {
+				float health = ((LivingEntity) (Object) this).getHealth();
+				double maxDamage = Math.max(0.0, health - 1.0);
+				out = Math.min(out, maxDamage);
+			}
+		}
+
 		return (float) out;
 	}
 }
