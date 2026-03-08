@@ -8,6 +8,7 @@ public final class SmpCoreConfig {
 
 	public Messages messages = new Messages();
 	public Gameplay gameplay = new Gameplay();
+	public VoiceChat voiceChat = new VoiceChat();
 	public Bans bans = new Bans();
 	public Potions potions = new Potions();
 	public Death death = new Death();
@@ -29,6 +30,32 @@ public final class SmpCoreConfig {
 		BASIC,
 		FAST,
 		STRICT
+	}
+
+	public static final class VoiceChat {
+		/**
+		 * If enabled, SMP Core will write Simple Voice Chat settings to {@code config/voicechat/voicechat-server.properties}.
+		 */
+		public boolean manageSimpleVoiceChat = false;
+
+		public int port = 24454;
+		public String bindAddress = "";
+
+		public double maxVoiceDistance = 48.0;
+		public double whisperDistance = 24.0;
+
+		public VoiceChatCodec codec = VoiceChatCodec.VOIP;
+		public boolean enableGroups = true;
+		public boolean allowRecording = true;
+		public boolean spectatorInteraction = false;
+		public boolean forceVoiceChat = false;
+		public int loginTimeoutMs = 10_000;
+	}
+
+	public enum VoiceChatCodec {
+		VOIP,
+		AUDIO,
+		RESTRICTED_LOWDELAY
 	}
 
 	public Combat combat = new Combat();

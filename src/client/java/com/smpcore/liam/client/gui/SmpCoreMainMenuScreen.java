@@ -57,6 +57,12 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 			this.minecraft.setScreen(new SmpCoreCooldownsScreen(this, config));
 		}));
 		cds.setTooltip(Tooltip.create(Component.literal("Pearl/gap/wind-charge cooldowns.")));
+		y += h + gap;
+
+		IconCardButton vc = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.NOTE_BLOCK), Component.literal("Voice Chat"), () -> {
+			this.minecraft.setScreen(new SmpCoreVoiceChatScreen(this, config));
+		}));
+		vc.setTooltip(Tooltip.create(Component.literal("Simple Voice Chat integration + server-side settings.")));
 
 		addRenderableWidget(Button.builder(Component.literal("Close"), b -> onClose())
 				.bounds(left, this.height - 32, w, 20)

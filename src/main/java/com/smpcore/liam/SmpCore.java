@@ -4,6 +4,7 @@ import com.smpcore.liam.config.ConfigManager;
 import com.smpcore.liam.config.ConfigJson;
 import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.feature.SmpCoreFeatures;
+import com.smpcore.liam.integration.SimpleVoiceChatIntegration;
 import com.smpcore.liam.net.SmpCorePayloads;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -52,6 +53,7 @@ public class SmpCore implements ModInitializer {
 	private static void applyConfig(SmpCoreConfig newConfig) {
 		config = newConfig;
 		ConfigManager.save(newConfig);
+		SimpleVoiceChatIntegration.applyToVoiceChatConfigIfEnabled(newConfig);
 		SmpCoreFeatures.reloadAll(newConfig);
 	}
 
@@ -85,6 +87,8 @@ public class SmpCore implements ModInitializer {
 	}
 
 	private static void openAdminScreen(ServerPlayer player) {
-		ServerPlayNetworking.send(player, new SmpCorePayloads.OpenAdminPayload(ConfigJson.toJson(getConfig())));
+		SmpCoreConfig snapshot = ConfigJson.fromJson(ConfigJson.toJson(getConfig()));
+		SimpleVoiceChatIntegration.syncFromVoiceChatConfigIfPresent(snapshot);
+		ServerPlayNetworking.send(player, new SmpCorePayloads.OpenAdminPayload(ConfigJson.toJson(snapshot)));
 	}
 }
