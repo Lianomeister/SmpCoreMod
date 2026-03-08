@@ -15,15 +15,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 public final class CooldownFeature {
 	private static boolean registered;
 	private static final NoticeCooldowns NOTICE_COOLDOWNS = new NoticeCooldowns();
-
-	private static final Map<UUID, Map<Item, Long>> nextUseMillisByPlayer = new ConcurrentHashMap<>();
 
 	private static volatile boolean actionBar;
 	private static volatile long minMillisBetweenNotices;
@@ -57,15 +51,15 @@ public final class CooldownFeature {
 				return InteractionResult.PASS;
 			}
 
-			long now = System.currentTimeMillis();
-			Map<Item, Long> map = nextUseMillisByPlayer.computeIfAbsent(serverPlayer.getUUID(), id -> new ConcurrentHashMap<>());
-			Long next = map.get(stack.getItem());
-			if (next != null && now < next) {
+			if (serverPlayer.getCooldowns().isOnCooldown(stack)) {
 				notify(serverPlayer, "On cooldown.");
 				return InteractionResult.FAIL;
 			}
 
-			map.put(stack.getItem(), now + cooldownMs);
+			int ticks = (int) Math.ceil(cooldownMs / 50.0);
+			if (ticks > 0) {
+				serverPlayer.getCooldowns().addCooldown(stack, ticks);
+			}
 			return InteractionResult.PASS;
 		});
 	}
