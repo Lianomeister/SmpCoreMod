@@ -2,10 +2,12 @@ package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
+import com.smpcore.liam.client.gui.widget.SmpCoreStyledButton;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public final class SmpCoreEnchantmentsScreen extends SmpCoreMenuBase {
 	private EditBox sharpnessMax;
@@ -21,11 +23,15 @@ public final class SmpCoreEnchantmentsScreen extends SmpCoreMenuBase {
 		int x = (this.width - w) / 2;
 		int y = 52;
 
-		addRenderableWidget(Button.builder(Component.literal("Clamp on join: " + (config.enchantments.clampOnJoin ? "Enabled" : "Disabled")), b -> {
-			config.enchantments.clampOnJoin = !config.enchantments.clampOnJoin;
-			b.setMessage(Component.literal("Clamp on join: " + (config.enchantments.clampOnJoin ? "Enabled" : "Disabled")));
-			saveToServer();
-		}).bounds(x, y, w, 20).build());
+		SmpCoreStyledButton[] clamp = new SmpCoreStyledButton[1];
+		clamp[0] = addRenderableWidget(new SmpCoreStyledButton(x, y, w, 20,
+				Component.literal("Clamp on join: " + (config.enchantments.clampOnJoin ? "Enabled" : "Disabled")),
+				new ItemStack(Items.ANVIL),
+				() -> {
+					config.enchantments.clampOnJoin = !config.enchantments.clampOnJoin;
+					clamp[0].setMessage(Component.literal("Clamp on join: " + (config.enchantments.clampOnJoin ? "Enabled" : "Disabled")));
+					saveToServer();
+				}));
 		y += 30;
 
 		sharpnessMax = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Sharpness max")));

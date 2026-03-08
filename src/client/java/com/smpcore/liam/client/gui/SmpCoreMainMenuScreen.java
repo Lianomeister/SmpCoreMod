@@ -1,9 +1,9 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.client.gui.widget.SmpCoreDiagonalCarousel;
+import com.smpcore.liam.client.gui.widget.SmpCoreStyledButton;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -55,9 +55,7 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 						null)
 		)));
 
-		addRenderableWidget(Button.builder(Component.literal("Close"), b -> onClose())
-				.bounds(left, this.height - 32, w, 20)
-				.build());
+		addRenderableWidget(new SmpCoreStyledButton(left, this.height - 32, w, 20, Component.literal("Close"), this::onClose));
 	}
 
 	@Override

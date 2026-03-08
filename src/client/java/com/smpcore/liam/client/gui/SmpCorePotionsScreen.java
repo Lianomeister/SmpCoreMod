@@ -2,17 +2,20 @@ package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
+import com.smpcore.liam.client.gui.widget.SmpCoreStyledButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class SmpCorePotionsScreen extends SmpCoreMenuBase {
 	private MultiLineEditBox bannedEffectIds;
-	private Button banAllButton;
+	private SmpCoreStyledButton banAllButton;
 
 	public SmpCorePotionsScreen(SmpCoreMenuBase parent, SmpCoreConfig config) {
 		super(Component.literal("Potions"), parent, config);
@@ -24,14 +27,14 @@ public final class SmpCorePotionsScreen extends SmpCoreMenuBase {
 		int x = (this.width - w) / 2;
 		int y = 44;
 
-		banAllButton = addRenderableWidget(Button.builder(banAllTitle(), b -> {
+		banAllButton = addRenderableWidget(new SmpCoreStyledButton(x, y, w, 20, banAllTitle(), new ItemStack(Items.POTION), () -> {
 			config.potions.banAll = !config.potions.banAll;
-			b.setMessage(banAllTitle());
+			banAllButton.setMessage(banAllTitle());
 			saveToServer();
-		}).bounds(x, y, w, 20).build());
+		}));
 		y += 26;
 
-		addRenderableWidget(Button.builder(Component.literal("Toggle common effects…"), b -> toggleCommonEffects()).bounds(x, y, w, 20).build());
+		addRenderableWidget(new SmpCoreStyledButton(x, y, w, 20, Component.literal("Toggle common effects…"), new ItemStack(Items.BOOK), this::toggleCommonEffects));
 		y += 30;
 
 		bannedEffectIds = new MultiLineEditBox.Builder()
