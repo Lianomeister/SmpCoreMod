@@ -4,6 +4,7 @@ import com.smpcore.liam.config.ConfigManager;
 import com.smpcore.liam.config.ConfigJson;
 import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.feature.SmpCoreFeatures;
+import com.smpcore.liam.gui.AdminMenu;
 import com.smpcore.liam.net.SmpCorePayloads;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -39,6 +40,16 @@ public class SmpCore implements ModInitializer {
 		return config;
 	}
 
+	public static synchronized void updateConfig(java.util.function.Consumer<SmpCoreConfig> mutator) {
+		try {
+			SmpCoreConfig copy = ConfigJson.fromJson(ConfigJson.toJson(config));
+			mutator.accept(copy);
+			applyConfig(copy);
+		} catch (Exception e) {
+			LOGGER.warn("Failed to update config", e);
+		}
+	}
+
 	private static void applyConfig(SmpCoreConfig newConfig) {
 		config = newConfig;
 		ConfigManager.save(newConfig);
@@ -51,7 +62,7 @@ public class SmpCore implements ModInitializer {
 					.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
 					.executes(ctx -> {
 						ServerPlayer player = ctx.getSource().getPlayerOrException();
-						openAdminScreen(player);
+						AdminMenu.openMain(player);
 						return 1;
 					}));
 		});

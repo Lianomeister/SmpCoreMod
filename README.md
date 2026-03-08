@@ -63,8 +63,8 @@ Server-side Fabric mod for **Minecraft 1.21.11** that provides SMP rules, combat
 
 ## Admin GUI
 
-- Run `/smpcore` (requires admin permissions) to open the in-game **Admin Panel**
-- Saving in the GUI writes `config/smpcore.json` and hot-reloads the rules
+- Run `/smpcore` (requires admin permissions) to open the in-game **Settings** menu (inventory GUI)
+- Click icons to toggle rules; changes write to `config/smpcore.json` and hot-reload immediately
 
 ## Build
 

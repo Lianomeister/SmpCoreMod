@@ -7,7 +7,10 @@ public final class SmpCoreConfig {
 	public int configVersion = 1;
 
 	public Messages messages = new Messages();
+	public Gameplay gameplay = new Gameplay();
 	public Bans bans = new Bans();
+	public Potions potions = new Potions();
+	public Death death = new Death();
 	public Effects effects = new Effects();
 	public Enchantments enchantments = new Enchantments();
 
@@ -16,11 +19,19 @@ public final class SmpCoreConfig {
 		public long minMillisBetweenNotices = 1500;
 	}
 
+	public static final class Gameplay {
+		public boolean pvpEnabled = true;
+		public boolean antiXrayEnabled = false;
+	}
+
 	public static final class Bans {
 		public boolean banBedBombing = true;
 		public boolean banAnchorBombing = true;
 		public boolean banMace = true;
 		public boolean banTntMinecarts = true;
+		public boolean banPearls = false;
+		public boolean banCrystals = false;
+		public boolean banTippedArrows = false;
 
 		public boolean removeBannedItemsOnJoin = true;
 
@@ -28,6 +39,19 @@ public final class SmpCoreConfig {
 		 * Item IDs like "minecraft:ender_pearl". Use this for server-specific bans.
 		 */
 		public List<String> bannedItems = new ArrayList<>();
+	}
+
+	public static final class Potions {
+		public boolean banAll = false;
+
+		/**
+		 * Status effect IDs like "minecraft:strength". If empty, only {@link #banAll} is enforced.
+		 */
+		public List<String> bannedPotionEffects = new ArrayList<>();
+	}
+
+	public static final class Death {
+		public boolean spectatorAfterDeath = false;
 	}
 
 	public static final class Effects {

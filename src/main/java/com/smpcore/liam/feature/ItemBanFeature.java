@@ -99,6 +99,15 @@ public final class ItemBanFeature {
 		if (config.bans.banMace) {
 			banned.add(Items.MACE);
 		}
+		if (config.bans.banPearls) {
+			banned.add(Items.ENDER_PEARL);
+		}
+		if (config.bans.banCrystals) {
+			banned.add(Items.END_CRYSTAL);
+		}
+		if (config.bans.banTippedArrows) {
+			banned.add(Items.TIPPED_ARROW);
+		}
 
 		for (String rawId : config.bans.bannedItems) {
 			Identifier id = IdUtil.parse(rawId);
