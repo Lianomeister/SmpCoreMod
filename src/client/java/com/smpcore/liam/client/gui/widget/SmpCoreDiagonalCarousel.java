@@ -44,16 +44,18 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 
 		int n = entries.size();
 
-		int cardW = Math.min(320, this.width - 24);
-		int cardH = 38;
-		int gapX = 28;
+		int cardW = Math.min(280, this.width - 24);
+		int cardH = 56;
+		int gapX = 46;
 
-		int maxSlope = (this.height - cardH - 16) / Math.max(1, n - 1);
-		int slopeY = n <= 1 ? 0 : clampInt(Math.min(10, maxSlope), 4, 10);
+		// Diagonal effect should depend on current on-screen X (not on index),
+		// so items don't drift further down when you scroll to later entries.
+		int slopeAmplitude = Math.min(42, Math.max(16, (this.height - cardH - 16) / 2));
+		double slopePerPx = this.width <= 0 ? 0.0 : (double) slopeAmplitude / (double) this.width;
 
 		int baseX = getX() + 10;
-		int baseY = getY() + (this.height - (cardH + Math.max(0, n - 1) * slopeY)) / 2;
-		baseY = Math.max(getY() + 8, baseY);
+		int baseY = getY() + (this.height - cardH) / 2;
+		baseY = clampInt(baseY, getY() + 8, getY() + this.height - cardH - 8);
 
 		int maxX = baseX + (entries.size() - 1) * (cardW + gapX);
 		int minScroll = 0;
@@ -64,7 +66,9 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 			Entry e = entries.get(i);
 
 			int x = (int) Math.round(baseX + i * (cardW + gapX) - scrollX);
-			int y = baseY + i * slopeY;
+			int centerX = getX() + this.width / 2;
+			int y = baseY + (int) Math.round((x - centerX) * slopePerPx);
+			y = clampInt(y, getY() + 8, getY() + this.height - cardH - 8);
 
 			// quick cull
 			if (x + cardW < getX() || x > getX() + this.width || y + cardH < getY() || y > getY() + this.height) {
@@ -84,8 +88,8 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 			graphics.renderFakeItem(e.icon(), iconX, iconY);
 
 			int textX = iconX + 22;
-			int titleY = y + 6;
-			int descY = titleY + 12;
+			int titleY = y + 9;
+			int descY = titleY + 14;
 
 			Minecraft mc = Minecraft.getInstance();
 			Component valueText = e.value() == null ? null : e.value().get();
@@ -117,23 +121,25 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 
 		int n = entries.size();
 
-		int cardW = Math.min(320, this.width - 24);
-		int cardH = 38;
-		int gapX = 28;
+		int cardW = Math.min(280, this.width - 24);
+		int cardH = 56;
+		int gapX = 46;
 
-		int maxSlope = (this.height - cardH - 16) / Math.max(1, n - 1);
-		int slopeY = n <= 1 ? 0 : clampInt(Math.min(10, maxSlope), 4, 10);
+		int slopeAmplitude = Math.min(42, Math.max(16, (this.height - cardH - 16) / 2));
+		double slopePerPx = this.width <= 0 ? 0.0 : (double) slopeAmplitude / (double) this.width;
 
 		int baseX = getX() + 10;
-		int baseY = getY() + (this.height - (cardH + Math.max(0, n - 1) * slopeY)) / 2;
-		baseY = Math.max(getY() + 8, baseY);
+		int baseY = getY() + (this.height - cardH) / 2;
+		baseY = clampInt(baseY, getY() + 8, getY() + this.height - cardH - 8);
 
 		double mx = event.x();
 		double my = event.y();
 
 		for (int i = 0; i < entries.size(); i++) {
 			int x = (int) Math.round(baseX + i * (cardW + gapX) - scrollX);
-			int y = baseY + i * slopeY;
+			int centerX = getX() + this.width / 2;
+			int y = baseY + (int) Math.round((x - centerX) * slopePerPx);
+			y = clampInt(y, getY() + 8, getY() + this.height - cardH - 8);
 			if (mx >= x && my >= y && mx < x + cardW && my < y + cardH) {
 				if (event.button() == 0) {
 					entries.get(i).onPress().run();
