@@ -7,6 +7,7 @@ public final class SmpCoreFeatures {
 	}
 
 	public static void initAll(SmpCoreConfig config) {
+		AntiXrayFeature.init(config);
 		DimensionRulesFeature.init(config);
 		OnePlayerSleepFeature.init(config);
 		BedAndAnchorBanFeature.init(config);
@@ -25,6 +26,7 @@ public final class SmpCoreFeatures {
 	}
 
 	public static void reloadAll(SmpCoreConfig config) {
+		AntiXrayFeature.reload(config);
 		DimensionRulesFeature.reload(config);
 		OnePlayerSleepFeature.reload(config);
 		BedAndAnchorBanFeature.reload(config);

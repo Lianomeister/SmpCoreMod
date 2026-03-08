@@ -14,6 +14,8 @@ public final class OnePlayerSleepFeature {
 
 	private static volatile boolean enabled;
 	private static volatile boolean clearWeatherOnSkip;
+	private static volatile int minPlayers;
+	private static volatile int requiredPercent;
 	private static volatile boolean actionBar;
 	private static volatile long minMillisBetweenNotices;
 
@@ -38,19 +40,24 @@ public final class OnePlayerSleepFeature {
 					continue;
 				}
 
-				boolean anySleeping = false;
-				boolean anyLongEnough = false;
+				int eligible = 0;
+				int sleepingReady = 0;
 				for (ServerPlayer player : level.players()) {
-					if (player.isSleeping()) {
-						anySleeping = true;
-						if (player.isSleepingLongEnough()) {
-							anyLongEnough = true;
-							break;
-						}
+					if (player.isSpectator()) {
+						continue;
+					}
+					eligible++;
+					if (player.isSleeping() && player.isSleepingLongEnough()) {
+						sleepingReady++;
 					}
 				}
 
-				if (!anySleeping || !anyLongEnough) {
+				if (sleepingReady <= 0) {
+					continue;
+				}
+
+				int required = computeRequired(eligible);
+				if (sleepingReady < required) {
 					continue;
 				}
 
@@ -70,7 +77,7 @@ public final class OnePlayerSleepFeature {
 				}
 				level.updateSleepingPlayerList();
 
-				notifyAll(level, "Night skipped (one player sleep).");
+				notifyAll(level, "Night skipped (" + sleepingReady + "/" + required + " sleeping).");
 			}
 		});
 	}
@@ -78,8 +85,19 @@ public final class OnePlayerSleepFeature {
 	public static void reload(SmpCoreConfig config) {
 		enabled = config.sleep.onePlayerSleep;
 		clearWeatherOnSkip = config.sleep.clearWeatherOnSkip;
+		minPlayers = Math.max(1, config.sleep.minPlayers);
+		requiredPercent = Math.max(0, Math.min(100, config.sleep.requiredPercent));
 		actionBar = config.messages.actionBar;
 		minMillisBetweenNotices = config.messages.minMillisBetweenNotices;
+	}
+
+	private static int computeRequired(int eligiblePlayers) {
+		int required = minPlayers;
+		if (requiredPercent > 0 && eligiblePlayers > 0) {
+			int byPercent = (int) Math.ceil((eligiblePlayers * (double) requiredPercent) / 100.0);
+			required = Math.max(required, byPercent);
+		}
+		return Math.max(1, required);
 	}
 
 	private static void notifyAll(ServerLevel level, String message) {
@@ -95,4 +113,3 @@ public final class OnePlayerSleepFeature {
 		}
 	}
 }
-

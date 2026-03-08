@@ -39,6 +39,17 @@ public final class SmpCoreConfig {
 	public static final class Sleep {
 		public boolean onePlayerSleep = false;
 		public boolean clearWeatherOnSkip = true;
+
+		/**
+		 * Minimum required sleeping players to skip the night. Clamped to at least 1.
+		 */
+		public int minPlayers = 1;
+
+		/**
+		 * Percentage of (eligible) players required to be sleeping to skip the night.
+		 * Set to 0 to use {@link #minPlayers} only.
+		 */
+		public int requiredPercent = 0;
 	}
 
 	public enum AntiXrayMode {

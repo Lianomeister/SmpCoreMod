@@ -43,6 +43,45 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		addToggle(new ItemStack(Items.RED_BED), "One player sleep", "Skip the night when one player sleeps (Overworld).", () -> config.sleep.onePlayerSleep, v -> config.sleep.onePlayerSleep = v);
 		addToggle(new ItemStack(Items.SUNFLOWER), "Clear weather on skip", "If enabled, one player sleep also clears rain/thunder.", () -> config.sleep.clearWeatherOnSkip, v -> config.sleep.clearWeatherOnSkip = v);
 
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.PLAYER_HEAD),
+				Component.literal("Sleep min players"),
+				Component.literal("Minimum players that must be sleeping to skip the night."),
+				List.of(Component.literal("Minimum players required."), Component.literal("Clamped to at least 1.")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Sleep min players"),
+						Component.literal("Minimum sleeping players"),
+						Integer.toString(config.sleep.minPlayers),
+						List.of(Component.literal("Example: 1"), Component.literal("Clamped to at least 1.")),
+						txt -> {
+							try {
+								config.sleep.minPlayers = Math.max(1, Integer.parseInt(txt.trim()));
+							} catch (Exception ignored) {
+							}
+						})),
+				() -> Component.literal(Integer.toString(config.sleep.minPlayers))
+		));
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.CLOCK),
+				Component.literal("Sleep required percent"),
+				Component.literal("Percent of players that must be sleeping to skip the night (0 = disabled)."),
+				List.of(Component.literal("0 disables percent requirement."), Component.literal("Range: 0-100")),
+				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
+						Component.literal("Sleep required percent"),
+						Component.literal("Percent requirement (0-100)"),
+						Integer.toString(config.sleep.requiredPercent),
+						List.of(Component.literal("0 = only min players"), Component.literal("Example: 50 = half the players")),
+						txt -> {
+							try {
+								int v = Integer.parseInt(txt.trim());
+								config.sleep.requiredPercent = Math.max(0, Math.min(100, v));
+							} catch (Exception ignored) {
+							}
+						})),
+				() -> Component.literal(config.sleep.requiredPercent + "%")
+		));
+
 		addToggle(new ItemStack(Items.OBSIDIAN), "Nether enabled", "Allow entering the Nether via portals.", () -> config.dimensions.allowNether, v -> config.dimensions.allowNether = v);
 		addToggle(new ItemStack(Items.ENDER_EYE), "End enabled", "Allow entering The End via end portals.", () -> config.dimensions.allowEnd, v -> config.dimensions.allowEnd = v);
 
