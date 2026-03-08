@@ -42,13 +42,18 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		hoveredTooltip = null;
 
-		int cardW = Math.min(360, this.width - 10);
-		int cardH = 44;
-		int gapX = 40;
-		int slopeY = 26;
+		int n = entries.size();
 
-		int baseX = getX() + 6;
-		int baseY = getY() + 8;
+		int cardW = Math.min(320, this.width - 24);
+		int cardH = 38;
+		int gapX = 28;
+
+		int maxSlope = (this.height - cardH - 16) / Math.max(1, n - 1);
+		int slopeY = n <= 1 ? 0 : clampInt(Math.min(10, maxSlope), 4, 10);
+
+		int baseX = getX() + 10;
+		int baseY = getY() + (this.height - (cardH + Math.max(0, n - 1) * slopeY)) / 2;
+		baseY = Math.max(getY() + 8, baseY);
 
 		int maxX = baseX + (entries.size() - 1) * (cardW + gapX);
 		int minScroll = 0;
@@ -110,12 +115,18 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 			return;
 		}
 
-		int cardW = Math.min(360, this.width - 10);
-		int cardH = 44;
-		int gapX = 40;
-		int slopeY = 26;
-		int baseX = getX() + 6;
-		int baseY = getY() + 8;
+		int n = entries.size();
+
+		int cardW = Math.min(320, this.width - 24);
+		int cardH = 38;
+		int gapX = 28;
+
+		int maxSlope = (this.height - cardH - 16) / Math.max(1, n - 1);
+		int slopeY = n <= 1 ? 0 : clampInt(Math.min(10, maxSlope), 4, 10);
+
+		int baseX = getX() + 10;
+		int baseY = getY() + (this.height - (cardH + Math.max(0, n - 1) * slopeY)) / 2;
+		baseY = Math.max(getY() + 8, baseY);
 
 		double mx = event.x();
 		double my = event.y();
@@ -150,5 +161,8 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 	private static double clamp(double v, double min, double max) {
 		return Math.max(min, Math.min(max, v));
 	}
-}
 
+	private static int clampInt(int v, int min, int max) {
+		return Math.max(min, Math.min(max, v));
+	}
+}
