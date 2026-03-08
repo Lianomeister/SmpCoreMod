@@ -1,6 +1,7 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.config.SmpCoreConfig;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -35,7 +36,7 @@ public final class SmpCoreAntiXrayScreen extends SmpCoreMenuBase {
 		}).bounds(x, y, w, 20).build());
 		modeButton.setTooltip(Tooltip.create(Component.literal("Switch between engine modes (implementation WIP).")));
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override

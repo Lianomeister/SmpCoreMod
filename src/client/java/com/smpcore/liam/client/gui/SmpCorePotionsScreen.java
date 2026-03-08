@@ -1,6 +1,7 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.config.SmpCoreConfig;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineEditBox;
@@ -42,7 +43,7 @@ public final class SmpCorePotionsScreen extends SmpCoreMenuBase {
 		bannedEffectIds.setValue(String.join("\n", config.potions.bannedPotionEffects));
 		addRenderableWidget(bannedEffectIds);
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override

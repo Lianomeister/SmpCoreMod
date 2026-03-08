@@ -1,9 +1,9 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -43,9 +43,7 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 		addToggle(new ItemStack(Items.ENCHANTED_BOOK), "Ban breach swapping", "Blocks swapping hotbar slot briefly after Breach attacks.", () -> config.combat.banBreachSwapping, v -> config.combat.banBreachSwapping = v);
 		addInt(new ItemStack(Items.ENCHANTED_BOOK), "Breach swap lock", "Time (ms) where hotbar slot swapping is blocked after Breach attacks.", () -> config.combat.breachSwapLockMs, v -> config.combat.breachSwapLockMs = v, 0, 5000, "ms");
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
-				.bounds(left, this.height - 32, w, 20)
-				.build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override
@@ -144,4 +142,3 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 		}
 	}
 }
-

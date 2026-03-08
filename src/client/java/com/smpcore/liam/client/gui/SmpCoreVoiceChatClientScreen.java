@@ -2,6 +2,7 @@ package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.client.integration.SimpleVoiceChatClientConfig;
 import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -120,9 +121,7 @@ public final class SmpCoreVoiceChatClientScreen extends SmpCoreMenuBase {
 				() -> Component.literal("Copy")
 		));
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
-				.bounds(left, this.height - 32, w, 20)
-				.build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override
@@ -245,4 +244,3 @@ public final class SmpCoreVoiceChatClientScreen extends SmpCoreMenuBase {
 		}
 	}
 }
-

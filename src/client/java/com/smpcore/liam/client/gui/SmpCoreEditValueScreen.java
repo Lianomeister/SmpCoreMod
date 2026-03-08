@@ -1,6 +1,7 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.config.SmpCoreConfig;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -44,7 +45,7 @@ public final class SmpCoreEditValueScreen extends SmpCoreMenuBase {
 			value.setTooltip(Tooltip.create(help.getFirst()));
 		}
 
-		addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override

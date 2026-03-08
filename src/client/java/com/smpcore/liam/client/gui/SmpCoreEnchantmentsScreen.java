@@ -1,6 +1,7 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.config.SmpCoreConfig;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -34,7 +35,7 @@ public final class SmpCoreEnchantmentsScreen extends SmpCoreMenuBase {
 		protectionMax = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Protection max")));
 		protectionMax.setValue(Integer.toString(config.enchantments.limits.protectionMax));
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override

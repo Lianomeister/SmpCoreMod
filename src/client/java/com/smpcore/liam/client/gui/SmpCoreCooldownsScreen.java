@@ -1,9 +1,9 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -33,9 +33,7 @@ public final class SmpCoreCooldownsScreen extends SmpCoreMenuBase {
 		addSeconds(new ItemStack(Items.MACE), "Mace cooldown", "Cooldown after the mace deals damage (blocked hits don't trigger it).", () -> config.cooldowns.maceSeconds, v -> config.cooldowns.maceSeconds = v);
 		addSeconds(new ItemStack(Items.TRIDENT), "Riptide cooldown", "Cooldown for using Riptide tridents (applies when starting to use the trident).", () -> config.cooldowns.riptideSeconds, v -> config.cooldowns.riptideSeconds = v);
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
-				.bounds(left, this.height - 32, w, 20)
-				.build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override
@@ -77,4 +75,3 @@ public final class SmpCoreCooldownsScreen extends SmpCoreMenuBase {
 		}
 	}
 }
-

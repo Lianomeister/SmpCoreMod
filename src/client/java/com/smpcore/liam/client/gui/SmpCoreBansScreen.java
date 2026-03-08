@@ -1,9 +1,9 @@
 package com.smpcore.liam.client.gui;
 
 import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
+import com.smpcore.liam.client.gui.widget.SmpCoreBackButton;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -35,9 +35,7 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 		addBan(new ItemStack(Items.END_CRYSTAL), "End crystals", "Disables end crystal placement/usage.", () -> config.bans.banCrystals, v -> config.bans.banCrystals = v);
 		addBan(new ItemStack(Items.TIPPED_ARROW), "Tipped arrows", "Disables tipped arrows.", () -> config.bans.banTippedArrows, v -> config.bans.banTippedArrows = v);
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose())
-				.bounds(left, this.height - 32, w, 20)
-				.build());
+		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
 	@Override
@@ -69,4 +67,3 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 		));
 	}
 }
-
