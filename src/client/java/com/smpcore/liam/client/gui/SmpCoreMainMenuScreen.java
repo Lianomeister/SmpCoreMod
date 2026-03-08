@@ -1,68 +1,66 @@
 package com.smpcore.liam.client.gui;
 
-import com.smpcore.liam.client.gui.widget.IconCardButton;
+import com.smpcore.liam.client.gui.widget.SmpCoreCategoryList;
 import com.smpcore.liam.config.SmpCoreConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.List;
+
 public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
+	private SmpCoreCategoryList list;
+
 	public SmpCoreMainMenuScreen(SmpCoreConfig config) {
 		super(Component.literal("SMP Core"), null, config);
 	}
 
 	@Override
 	protected void init() {
-		int w = 220;
-		int h = 28;
-		int gap = 10;
-
+		int w = Math.min(380, this.width - 40);
 		int left = (this.width - w) / 2;
-		int y = 44;
+		int top = 44;
+		int listBottom = this.height - 44;
 
-		IconCardButton gameplay = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.IRON_SWORD), Component.literal("Gameplay"), () -> {
+		this.list = addRenderableWidget(new SmpCoreCategoryList(this.minecraft, w, this.height, top, listBottom, 44));
+		this.list.setLeftPos(left);
+
+		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.IRON_SWORD), Component.literal("Gameplay"), Component.literal("PvP, anti-xray, spectator after death, dimensions, sleep."),
+				List.of(Component.literal("PvP toggle, anti-xray settings, spectator-after-death.")), () -> {
 			this.minecraft.setScreen(new SmpCoreGameplayScreen(this, config));
 		}));
-		gameplay.setTooltip(Tooltip.create(Component.literal("PvP toggle, anti-xray settings, spectator-after-death.")));
-		y += h + gap;
 
-		IconCardButton bans = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.BARRIER), Component.literal("Bans"), () -> {
+		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.BARRIER), Component.literal("Bans"), Component.literal("Bed/anchor/TNT minecart/mace/pearls/crystals/tipped arrows and more."),
+				List.of(Component.literal("Bed/anchor/TNT minecart/mace/pearls/crystals/tipped arrows.")), () -> {
 			this.minecraft.setScreen(new SmpCoreBansScreen(this, config));
 		}));
-		bans.setTooltip(Tooltip.create(Component.literal("Bed/anchor/TNT minecart/mace/pearls/crystals/tipped arrows.")));
-		y += h + gap;
 
-		IconCardButton potions = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.POTION), Component.literal("Potions"), () -> {
+		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.POTION), Component.literal("Potions"), Component.literal("Ban all potions or only certain effects (with a sub-menu)."),
+				List.of(Component.literal("Ban all potions or specific potion effects.")), () -> {
 			this.minecraft.setScreen(new SmpCorePotionsScreen(this, config));
 		}));
-		potions.setTooltip(Tooltip.create(Component.literal("Ban all potions or specific potion effects.")));
-		y += h + gap;
 
-		IconCardButton ench = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.ENCHANTED_BOOK), Component.literal("Enchant Limits"), () -> {
+		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.ENCHANTED_BOOK), Component.literal("Enchant Limits"), Component.literal("Clamp max levels and ban specific enchantments (server-side)."),
+				List.of(Component.literal("Sharpness/protection clamping + banned enchant list (server-side).")), () -> {
 			this.minecraft.setScreen(new SmpCoreEnchantmentsScreen(this, config));
 		}));
-		ench.setTooltip(Tooltip.create(Component.literal("Sharpness/protection clamping + banned enchant list (server-side).")));
-		y += h + gap;
 
-		IconCardButton combat = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.SHIELD), Component.literal("Combat"), () -> {
+		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.SHIELD), Component.literal("Combat"), Component.literal("Combat tag, anti-restock, anti-elytra, and damage scaling."),
+				List.of(Component.literal("Combat tag, anti-restock, anti-elytra, PvP damage scaling.")), () -> {
 			this.minecraft.setScreen(new SmpCoreCombatScreen(this, config));
 		}));
-		combat.setTooltip(Tooltip.create(Component.literal("Combat tag, anti-restock, anti-elytra, PvP damage scaling.")));
-		y += h + gap;
 
-		IconCardButton cds = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.ENDER_PEARL), Component.literal("Cooldowns"), () -> {
+		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.ENDER_PEARL), Component.literal("Cooldowns"), Component.literal("Pearl, E-gap, wind charge, mace and more."),
+				List.of(Component.literal("Pearl/gap/wind-charge cooldowns.")), () -> {
 			this.minecraft.setScreen(new SmpCoreCooldownsScreen(this, config));
 		}));
-		cds.setTooltip(Tooltip.create(Component.literal("Pearl/gap/wind-charge cooldowns.")));
-		y += h + gap;
 
-		IconCardButton vc = addRenderableWidget(new IconCardButton(left, y, w, h, new ItemStack(Items.NOTE_BLOCK), Component.literal("Voice Chat"), () -> {
+		this.list.addEntry(new SmpCoreCategoryList.CategoryEntry(new ItemStack(Items.NOTE_BLOCK), Component.literal("Voice Chat"), Component.literal("Manage Simple Voice Chat server config (integration)."),
+				List.of(Component.literal("Simple Voice Chat integration + server-side settings.")), () -> {
 			this.minecraft.setScreen(new SmpCoreVoiceChatScreen(this, config));
 		}));
-		vc.setTooltip(Tooltip.create(Component.literal("Simple Voice Chat integration + server-side settings.")));
 
 		addRenderableWidget(Button.builder(Component.literal("Close"), b -> onClose())
 				.bounds(left, this.height - 32, w, 20)
@@ -75,5 +73,11 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 		graphics.drawCenteredString(font, Component.literal("SMP Core - Control Center"), width / 2, 18, 0xFFFFFF);
 		graphics.drawCenteredString(font, Component.literal("Click a category to configure server rules"), width / 2, 30, 0xB9B9B9);
 		super.render(graphics, mouseX, mouseY, partialTick);
+		if (list != null) {
+			List<Component> tooltip = list.consumeHoveredTooltip();
+			if (tooltip != null) {
+				graphics.renderTooltip(this.font, tooltip, mouseX, mouseY);
+			}
+		}
 	}
 }
