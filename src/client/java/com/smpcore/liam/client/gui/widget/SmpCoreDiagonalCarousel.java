@@ -44,13 +44,14 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 
 		int n = entries.size();
 
-		int cardW = Math.min(280, this.width - 24);
-		int cardH = 56;
-		int gapX = 46;
+		// Make the first view feel more "tile-like" (less long rectangles) and pack cards closer.
+		int cardW = Math.min(220, this.width - 24);
+		int cardH = 64;
+		int gapX = 18;
 
 		// Diagonal effect should depend on current on-screen X (not on index),
 		// so items don't drift further down when you scroll to later entries.
-		int slopeAmplitude = Math.min(42, Math.max(16, (this.height - cardH - 16) / 2));
+		int slopeAmplitude = Math.min(28, Math.max(10, (this.height - cardH - 16) / 3));
 		double slopePerPx = this.width <= 0 ? 0.0 : (double) slopeAmplitude / (double) this.width;
 
 		int baseX = getX() + 10;
@@ -88,7 +89,7 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 			graphics.renderFakeItem(e.icon(), iconX, iconY);
 
 			int textX = iconX + 22;
-			int titleY = y + 9;
+			int titleY = y + 10;
 			int descY = titleY + 14;
 
 			Minecraft mc = Minecraft.getInstance();
@@ -121,11 +122,11 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 
 		int n = entries.size();
 
-		int cardW = Math.min(280, this.width - 24);
-		int cardH = 56;
-		int gapX = 46;
+		int cardW = Math.min(220, this.width - 24);
+		int cardH = 64;
+		int gapX = 18;
 
-		int slopeAmplitude = Math.min(42, Math.max(16, (this.height - cardH - 16) / 2));
+		int slopeAmplitude = Math.min(28, Math.max(10, (this.height - cardH - 16) / 3));
 		double slopePerPx = this.width <= 0 ? 0.0 : (double) slopeAmplitude / (double) this.width;
 
 		int baseX = getX() + 10;
