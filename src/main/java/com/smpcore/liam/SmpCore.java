@@ -4,7 +4,6 @@ import com.smpcore.liam.config.ConfigManager;
 import com.smpcore.liam.config.ConfigJson;
 import com.smpcore.liam.config.SmpCoreConfig;
 import com.smpcore.liam.feature.SmpCoreFeatures;
-import com.smpcore.liam.gui.AdminMenu;
 import com.smpcore.liam.net.SmpCorePayloads;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -62,7 +61,7 @@ public class SmpCore implements ModInitializer {
 					.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
 					.executes(ctx -> {
 						ServerPlayer player = ctx.getSource().getPlayerOrException();
-						AdminMenu.openMain(player);
+						openAdminScreen(player);
 						return 1;
 					}));
 		});
