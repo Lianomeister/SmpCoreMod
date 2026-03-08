@@ -3,5 +3,6 @@
   "smpcore.death.anonymous": "%1$s was killed.",
   "key.smpcore.open_menu": "Open SMP Core Menu",
   "key.smpcore.open_voicechat_client": "Open Voice Chat Client Settings",
-  "key.category.smpcore.menu": "SMP Core"
+  "key.category.smpcore.menu": "SMP Core",
+  "message.smpcore.need_admin": "You need SMP Core admin permissions to open this menu."
 }

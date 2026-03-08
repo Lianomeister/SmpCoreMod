@@ -9,9 +9,11 @@ import com.smpcore.liam.item.SmpCoreItems;
 import com.smpcore.liam.net.SmpCorePayloads;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import net.minecraft.commands.Commands;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 
@@ -72,6 +74,12 @@ public class SmpCore implements ModInitializer {
 	}
 
 	private static void registerNetworking() {
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			server.execute(() -> {
+				ServerPlayNetworking.send(handler.player, new SmpCorePayloads.AdminStatusPayload(handler.player.permissions().hasPermission(Permissions.COMMANDS_ADMIN)));
+			});
+		});
+
 		ServerPlayNetworking.registerGlobalReceiver(SmpCorePayloads.RequestOpenAdminPayload.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				ServerPlayer player = context.player();
@@ -91,6 +99,10 @@ public class SmpCore implements ModInitializer {
 				try {
 					SmpCoreConfig newConfig = ConfigJson.fromJson(payload.configJson());
 					applyConfig(newConfig);
+					MinecraftServer server = player.level().getServer();
+					if (server != null) {
+						broadcastConfigUpdate(server);
+					}
 				} catch (Exception e) {
 					LOGGER.warn("Rejected config update from {}: invalid JSON", player.getName().getString(), e);
 				}
@@ -99,8 +111,21 @@ public class SmpCore implements ModInitializer {
 	}
 
 	private static void openAdminScreen(ServerPlayer player) {
+		ServerPlayNetworking.send(player, new SmpCorePayloads.OpenAdminPayload(snapshotConfigJson()));
+	}
+
+	private static String snapshotConfigJson() {
 		SmpCoreConfig snapshot = ConfigJson.fromJson(ConfigJson.toJson(getConfig()));
 		SimpleVoiceChatIntegration.syncFromVoiceChatConfigIfPresent(snapshot);
-		ServerPlayNetworking.send(player, new SmpCorePayloads.OpenAdminPayload(ConfigJson.toJson(snapshot)));
+		return ConfigJson.toJson(snapshot);
+	}
+
+	private static void broadcastConfigUpdate(MinecraftServer server) {
+		String configJson = snapshotConfigJson();
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+			if (player.permissions().hasPermission(Permissions.COMMANDS_ADMIN)) {
+				ServerPlayNetworking.send(player, new SmpCorePayloads.ConfigUpdatedPayload(configJson));
+			}
+		}
 	}
 }

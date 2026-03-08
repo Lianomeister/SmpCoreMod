@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public abstract class SmpCoreMenuBase extends Screen {
-	protected final SmpCoreConfig config;
+	protected SmpCoreConfig config;
 	protected final Screen parent;
 
 	protected SmpCoreMenuBase(Component title, Screen parent, SmpCoreConfig config) {
@@ -19,6 +19,10 @@ public abstract class SmpCoreMenuBase extends Screen {
 
 	protected void saveToServer() {
 		ClientPlayNetworking.send(new SmpCorePayloads.SaveConfigPayload(ConfigJson.toJson(config)));
+	}
+
+	public void updateConfig(SmpCoreConfig newConfig) {
+		this.config = newConfig;
 	}
 
 	@Override

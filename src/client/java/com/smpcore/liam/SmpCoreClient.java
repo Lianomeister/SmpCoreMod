@@ -1,6 +1,7 @@
 package com.smpcore.liam;
 
 import com.smpcore.liam.client.gui.SmpCoreMainMenuScreen;
+import com.smpcore.liam.client.gui.SmpCoreMenuBase;
 import com.smpcore.liam.client.gui.SmpCoreMissingVoiceChatScreen;
 import com.smpcore.liam.client.gui.SmpCoreVoiceChatClientScreen;
 import com.smpcore.liam.config.ConfigJson;
@@ -14,6 +15,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -22,6 +24,7 @@ public class SmpCoreClient implements ClientModInitializer {
 	private static KeyMapping openMenuKey;
 	private static KeyMapping openVoiceChatClientKey;
 	private static boolean shownMissingVoiceChat;
+	private static boolean canOpenMenu;
 
 	@Override
 	public void onInitializeClient() {
@@ -36,6 +39,10 @@ public class SmpCoreClient implements ClientModInitializer {
 
 			while (openMenuKey.consumeClick()) {
 				if (client.player == null) {
+					continue;
+				}
+				if (!canOpenMenu) {
+					client.player.displayClientMessage(Component.translatable("message.smpcore.need_admin"), true);
 					continue;
 				}
 				if (ClientPlayNetworking.canSend(SmpCorePayloads.RequestOpenAdminPayload.TYPE)) {
@@ -67,6 +74,23 @@ public class SmpCoreClient implements ClientModInitializer {
 					SmpCore.LOGGER.warn("Failed to open SMP Core admin screen: invalid config JSON from server", e);
 				}
 			});
+		});
+		ClientPlayNetworking.registerGlobalReceiver(SmpCorePayloads.ConfigUpdatedPayload.TYPE, (payload, context) -> {
+			Minecraft client = Minecraft.getInstance();
+			client.execute(() -> {
+				try {
+					SmpCoreConfig updated = ConfigJson.fromJson(payload.configJson());
+					if (client.screen instanceof SmpCoreMenuBase menu) {
+						menu.updateConfig(updated);
+					}
+				} catch (Exception e) {
+					SmpCore.LOGGER.warn("Failed to apply SMP Core config update: invalid JSON", e);
+				}
+			});
+		});
+		ClientPlayNetworking.registerGlobalReceiver(SmpCorePayloads.AdminStatusPayload.TYPE, (payload, context) -> {
+			Minecraft client = Minecraft.getInstance();
+			client.execute(() -> canOpenMenu = payload.hasAdminAccess());
 		});
 	}
 
