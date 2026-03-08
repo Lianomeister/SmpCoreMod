@@ -35,8 +35,7 @@ public final class SmpCoreAntiXrayScreen extends SmpCoreMenuBase {
 		}).bounds(x, y, w, 20).build());
 		modeButton.setTooltip(Tooltip.create(Component.literal("Switch between engine modes (implementation WIP).")));
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, 126, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Save"), b -> saveToServer()).bounds(x + 134, this.height - 32, 126, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
 	}
 
 	@Override
@@ -60,4 +59,3 @@ public final class SmpCoreAntiXrayScreen extends SmpCoreMenuBase {
 		return values[(mode.ordinal() + 1) % values.length];
 	}
 }
-

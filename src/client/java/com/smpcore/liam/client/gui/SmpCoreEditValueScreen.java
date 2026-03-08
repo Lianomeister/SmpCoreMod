@@ -18,6 +18,7 @@ public final class SmpCoreEditValueScreen extends SmpCoreMenuBase {
 	private final boolean saveToServer;
 
 	private EditBox value;
+	private boolean saved;
 
 	public SmpCoreEditValueScreen(SmpCoreMenuBase parent, SmpCoreConfig config, Component title, Component subtitle, String initialValue, List<Component> help, Consumer<String> onSave) {
 		this(parent, config, title, subtitle, initialValue, help, onSave, true);
@@ -43,8 +44,7 @@ public final class SmpCoreEditValueScreen extends SmpCoreMenuBase {
 			value.setTooltip(Tooltip.create(help.getFirst()));
 		}
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, (w - 8) / 2, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Save"), b -> save()).bounds(x + (w + 8) / 2, this.height - 32, (w - 8) / 2, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
 	}
 
 	@Override
@@ -65,10 +65,19 @@ public final class SmpCoreEditValueScreen extends SmpCoreMenuBase {
 	}
 
 	private void save() {
+		if (saved) {
+			return;
+		}
+		saved = true;
 		onSave.accept(value.getValue());
 		if (saveToServer) {
 			saveToServer();
 		}
-		onClose();
+	}
+
+	@Override
+	public void onClose() {
+		save();
+		super.onClose();
 	}
 }

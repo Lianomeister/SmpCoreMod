@@ -34,8 +34,7 @@ public final class SmpCoreEnchantmentsScreen extends SmpCoreMenuBase {
 		protectionMax = addRenderableWidget(new EditBox(font, x, y, w, 20, Component.literal("Protection max")));
 		protectionMax.setValue(Integer.toString(config.enchantments.limits.protectionMax));
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, 116, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Save"), b -> save()).bounds(x + 124, this.height - 32, 116, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
 	}
 
 	@Override
@@ -52,6 +51,12 @@ public final class SmpCoreEnchantmentsScreen extends SmpCoreMenuBase {
 		saveToServer();
 	}
 
+	@Override
+	public void onClose() {
+		save();
+		super.onClose();
+	}
+
 	private static int parseInt(String raw, int fallback) {
 		try {
 			return Integer.parseInt(raw.trim());
@@ -60,4 +65,3 @@ public final class SmpCoreEnchantmentsScreen extends SmpCoreMenuBase {
 		}
 	}
 }
-

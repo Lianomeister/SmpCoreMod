@@ -42,8 +42,7 @@ public final class SmpCorePotionsScreen extends SmpCoreMenuBase {
 		bannedEffectIds.setValue(String.join("\n", config.potions.bannedPotionEffects));
 		addRenderableWidget(bannedEffectIds);
 
-		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, 136, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Save"), b -> save()).bounds(x + 144, this.height - 32, 136, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Back"), b -> onClose()).bounds(x, this.height - 32, w, 20).build());
 	}
 
 	@Override
@@ -57,6 +56,12 @@ public final class SmpCorePotionsScreen extends SmpCoreMenuBase {
 	private void save() {
 		config.potions.bannedPotionEffects = parseIdList(bannedEffectIds.getValue());
 		saveToServer();
+	}
+
+	@Override
+	public void onClose() {
+		save();
+		super.onClose();
 	}
 
 	private Component banAllTitle() {
@@ -93,4 +98,3 @@ public final class SmpCorePotionsScreen extends SmpCoreMenuBase {
 		return out;
 	}
 }
-
