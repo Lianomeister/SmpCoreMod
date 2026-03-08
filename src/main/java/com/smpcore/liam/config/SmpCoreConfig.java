@@ -128,15 +128,15 @@ public final class SmpCoreConfig {
 	}
 
 	public static final class Bans {
-		public boolean banBedBombing = true;
-		public boolean banAnchorBombing = true;
-		public boolean banMace = true;
-		public boolean banTntMinecarts = true;
+		public boolean banBedBombing = false;
+		public boolean banAnchorBombing = false;
+		public boolean banMace = false;
+		public boolean banTntMinecarts = false;
 		public boolean banPearls = false;
 		public boolean banCrystals = false;
 		public boolean banTippedArrows = false;
 
-		public boolean removeBannedItemsOnJoin = true;
+		public boolean removeBannedItemsOnJoin = false;
 
 		/**
 		 * Item IDs like "minecraft:ender_pearl". Use this for server-specific bans.
