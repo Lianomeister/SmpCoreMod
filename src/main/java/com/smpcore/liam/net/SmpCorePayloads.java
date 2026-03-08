@@ -15,7 +15,8 @@ public final class SmpCorePayloads {
 	}
 
 	public record OpenAdminPayload(String configJson) implements CustomPacketPayload {
-		public static final Type<OpenAdminPayload> TYPE = CustomPacketPayload.createType(SmpCoreNet.S2C_OPEN_ADMIN.toString());
+		// NOTE: createType(String) expects a *path* (no namespace). Use a unique prefix to avoid collisions.
+		public static final Type<OpenAdminPayload> TYPE = CustomPacketPayload.createType("smpcore_open_admin");
 		public static final StreamCodec<RegistryFriendlyByteBuf, OpenAdminPayload> STREAM_CODEC = CustomPacketPayload.codec(
 				(payload, buf) -> buf.writeUtf(payload.configJson()),
 				buf -> new OpenAdminPayload(buf.readUtf())
@@ -28,7 +29,8 @@ public final class SmpCorePayloads {
 	}
 
 	public record SaveConfigPayload(String configJson) implements CustomPacketPayload {
-		public static final Type<SaveConfigPayload> TYPE = CustomPacketPayload.createType(SmpCoreNet.C2S_SAVE_CONFIG.toString());
+		// NOTE: createType(String) expects a *path* (no namespace). Use a unique prefix to avoid collisions.
+		public static final Type<SaveConfigPayload> TYPE = CustomPacketPayload.createType("smpcore_save_config");
 		public static final StreamCodec<RegistryFriendlyByteBuf, SaveConfigPayload> STREAM_CODEC = CustomPacketPayload.codec(
 				(payload, buf) -> buf.writeUtf(payload.configJson()),
 				buf -> new SaveConfigPayload(buf.readUtf())
