@@ -57,8 +57,8 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 	}
 
 	private List<Tile> layoutTiles() {
-		int padding = 14;
-		int gap = 12;
+		int padding = 12;
+		int gap = 10;
 
 		int cols = 5;
 		int rows = 3;
@@ -66,10 +66,10 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		// If the grid is too narrow, reduce columns to keep tiles square.
 		int innerW = Math.max(0, this.width - padding * 2);
 		int innerH = Math.max(0, this.height - padding * 2);
-		int minTile = 60;
+		int desiredMinTile = 78;
 		while (cols > 2) {
 			int tile = (innerW - gap * (cols - 1)) / cols;
-			if (tile >= minTile) {
+			if (tile >= desiredMinTile) {
 				break;
 			}
 			cols--;
@@ -78,7 +78,8 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		int maxVisible = cols * rows;
 		int tileSizeByW = (innerW - gap * (cols - 1)) / cols;
 		int tileSizeByH = (innerH - gap * (rows - 1)) / rows;
-		int tileSize = Math.max(minTile, Math.min(tileSizeByW, tileSizeByH));
+		// Never exceed available space; if the window is small, tiles will shrink instead of overflowing.
+		int tileSize = Math.min(tileSizeByW, tileSizeByH);
 
 		// Center the grid within our widget bounds.
 		int gridW = cols * tileSize + gap * (cols - 1);
@@ -180,20 +181,34 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 
 			// Icon (centered, top)
 			int iconX = x + (s - 16) / 2;
-			int iconY = y + 14;
+			int iconY = y + 16;
 			graphics.renderFakeItem(tile.entry().icon(), iconX, iconY);
 
-			// Title (centered, bottom; 1-2 lines)
+			// Title (centered, bottom; avoid ugly single-letter wrapping like "Cooldown" + "s")
 			int textW = s - 12;
-			List<FormattedCharSequence> lines = mc.font.split(tile.entry().title(), Math.max(20, textW));
-			int maxLines = Math.min(2, lines.size());
+			String titlePlain = tile.entry().title().getString();
 			int lineH = 9;
-			int textY = y + s - 12 - (maxLines * lineH);
-			for (int li = 0; li < maxLines; li++) {
-				FormattedCharSequence line = lines.get(li);
-				int lw = mc.font.width(line);
+			int textColor = (hovered ? 0xFFFFFF : 0xEDEDED) | 0xFF000000;
+			if (!titlePlain.contains(" ")) {
+				String fitted = titlePlain;
+				if (mc.font.width(fitted) > textW) {
+					int ellipsisW = mc.font.width("...");
+					fitted = mc.font.plainSubstrByWidth(fitted, Math.max(10, textW - ellipsisW)).trim() + "...";
+				}
+				int lw = mc.font.width(fitted);
 				int textX = x + (s - lw) / 2;
-				graphics.drawString(mc.font, line, textX, textY + li * lineH, (hovered ? 0xFFFFFF : 0xEDEDED) | 0xFF000000, true);
+				int textY = y + s - 16 - lineH;
+				graphics.drawString(mc.font, fitted, textX, textY, textColor, true);
+			} else {
+				List<FormattedCharSequence> lines = mc.font.split(tile.entry().title(), Math.max(20, textW));
+				int maxLines = Math.min(2, lines.size());
+				int textY = y + s - 14 - (maxLines * lineH);
+				for (int li = 0; li < maxLines; li++) {
+					FormattedCharSequence line = lines.get(li);
+					int lw = mc.font.width(line);
+					int textX = x + (s - lw) / 2;
+					graphics.drawString(mc.font, line, textX, textY + li * lineH, textColor, true);
+				}
 			}
 
 			pose.popMatrix();
@@ -254,4 +269,3 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
 }
-
