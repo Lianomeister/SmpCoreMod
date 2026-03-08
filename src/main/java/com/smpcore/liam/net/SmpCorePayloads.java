@@ -11,7 +11,23 @@ public final class SmpCorePayloads {
 
 	public static void register() {
 		PayloadTypeRegistry.playS2C().register(OpenAdminPayload.TYPE, OpenAdminPayload.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(RequestOpenAdminPayload.TYPE, RequestOpenAdminPayload.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(SaveConfigPayload.TYPE, SaveConfigPayload.STREAM_CODEC);
+	}
+
+	public record RequestOpenAdminPayload() implements CustomPacketPayload {
+		// NOTE: createType(String) expects a *path* (no namespace). Use a unique prefix to avoid collisions.
+		public static final Type<RequestOpenAdminPayload> TYPE = CustomPacketPayload.createType("smpcore_request_open_admin");
+		public static final StreamCodec<RegistryFriendlyByteBuf, RequestOpenAdminPayload> STREAM_CODEC = CustomPacketPayload.codec(
+				(payload, buf) -> {
+				},
+				buf -> new RequestOpenAdminPayload()
+		);
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
 	}
 
 	public record OpenAdminPayload(String configJson) implements CustomPacketPayload {

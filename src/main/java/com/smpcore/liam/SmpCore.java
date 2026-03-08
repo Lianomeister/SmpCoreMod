@@ -72,6 +72,16 @@ public class SmpCore implements ModInitializer {
 	}
 
 	private static void registerNetworking() {
+		ServerPlayNetworking.registerGlobalReceiver(SmpCorePayloads.RequestOpenAdminPayload.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				if (!player.permissions().hasPermission(Permissions.COMMANDS_ADMIN)) {
+					return;
+				}
+				openAdminScreen(player);
+			});
+		});
+
 		ServerPlayNetworking.registerGlobalReceiver(SmpCorePayloads.SaveConfigPayload.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				ServerPlayer player = context.player();

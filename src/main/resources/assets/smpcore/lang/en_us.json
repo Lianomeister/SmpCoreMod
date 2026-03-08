@@ -1,5 +1,6 @@
 {
   "item.smpcore.warden_heart": "Warden Heart",
-  "smpcore.death.anonymous": "%1$s was killed."
+  "smpcore.death.anonymous": "%1$s was killed.",
+  "key.smpcore.open_menu": "Open SMP Core Menu",
+  "key.category.smpcore.menu": "SMP Core"
 }
-
