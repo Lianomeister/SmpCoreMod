@@ -13,9 +13,12 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
+
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +73,45 @@ public class SmpCore implements ModInitializer {
 						openAdminScreen(player);
 						return 1;
 					}));
+
+			dispatcher.register(Commands.literal("smpstart")
+					.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
+					.then(Commands.literal("grace")
+							.then(Commands.argument("seconds", IntegerArgumentType.integer(0, 86400))
+									.executes(ctx -> {
+										int seconds = IntegerArgumentType.getInteger(ctx, "seconds");
+										long endsAt = seconds <= 0 ? 0L : System.currentTimeMillis() + (long) seconds * 1000L;
+
+										updateConfig(c -> {
+											c.start.graceEndsAtEpochMillis = endsAt;
+											// Force PvP off while grace is active.
+											c.gameplay.pvpEnabled = seconds <= 0;
+										});
+
+										if (getConfig().start.announceGrace) {
+											if (seconds <= 0) {
+												ctx.getSource().getServer().getPlayerList().broadcastSystemMessage(
+														Component.literal("Grace period ended. PvP is now enabled."),
+														false
+												);
+											} else {
+												ctx.getSource().getServer().getPlayerList().broadcastSystemMessage(
+														Component.literal("Grace period started for " + seconds + "s. PvP is disabled."),
+														false
+												);
+											}
+										}
+										return 1;
+									})))
+					.then(Commands.literal("status").executes(ctx -> {
+						long remaining = com.smpcore.liam.feature.GraceFeature.remainingSeconds();
+						if (remaining <= 0) {
+							ctx.getSource().sendSuccess(() -> Component.literal("No grace period active."), false);
+						} else {
+							ctx.getSource().sendSuccess(() -> Component.literal("Grace remaining: " + remaining + "s (PvP disabled)."), false);
+						}
+						return 1;
+					})));
 		});
 	}
 

@@ -21,6 +21,7 @@ public final class PvpRulesFeature {
 	private static volatile boolean enabledNoNakedKilling;
 	private static volatile boolean allowNakedVsNaked;
 	private static volatile boolean enabledNoAfkKilling;
+	private static volatile boolean pvpEnabled;
 	private static volatile long afkMillis;
 	private static volatile boolean actionBar;
 	private static volatile long minMillisBetweenNotices;
@@ -74,9 +75,14 @@ public final class PvpRulesFeature {
 		enabledNoNakedKilling = config.combat.noNakedKilling;
 		allowNakedVsNaked = config.combat.allowNakedVsNaked;
 		enabledNoAfkKilling = config.combat.noAfkKilling;
+		pvpEnabled = config.gameplay.pvpEnabled;
 		afkMillis = Math.max(0L, (long) config.combat.afkSeconds * 1000L);
 		actionBar = config.messages.actionBar;
 		minMillisBetweenNotices = config.messages.minMillisBetweenNotices;
+	}
+
+	public static boolean pvpEnabled() {
+		return pvpEnabled;
 	}
 
 	public static boolean noNakedKilling() {

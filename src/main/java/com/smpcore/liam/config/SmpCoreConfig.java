@@ -8,6 +8,7 @@ public final class SmpCoreConfig {
 
 	public Messages messages = new Messages();
 	public Gameplay gameplay = new Gameplay();
+	public Start start = new Start();
 	public Dimensions dimensions = new Dimensions();
 	public Sleep sleep = new Sleep();
 	public VoiceChat voiceChat = new VoiceChat();
@@ -67,6 +68,19 @@ public final class SmpCoreConfig {
 		 * If enabled, shift-click crafting from the result slot is blocked (prevents "craft all" behavior).
 		 */
 		public boolean oneCraftRecipes = false;
+	}
+
+	public static final class Start {
+		/**
+		 * When set (>0), PvP is forced off until this absolute timestamp (epoch millis).
+		 * After the timestamp is reached, SMP Core re-enables PvP and resets this to 0.
+		 */
+		public long graceEndsAtEpochMillis = 0L;
+
+		/**
+		 * If enabled, SMP Core announces grace start/end in chat.
+		 */
+		public boolean announceGrace = true;
 	}
 
 	public static final class Dimensions {

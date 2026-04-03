@@ -31,6 +31,7 @@ public final class SmpCoreFeatures {
 		VillagerRestockFeature.init(config);
 		PvpRulesFeature.init(config);
 		CraftingRulesFeature.init(config);
+		GraceFeature.init(config);
 	}
 
 	public static void reloadAll(SmpCoreConfig config) {
@@ -58,5 +59,6 @@ public final class SmpCoreFeatures {
 		VillagerRestockFeature.reload(config);
 		PvpRulesFeature.reload(config);
 		CraftingRulesFeature.reload(config);
+		GraceFeature.reload(config);
 	}
 }

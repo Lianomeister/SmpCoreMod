@@ -24,6 +24,12 @@ public class LivingEntityPvpRulesMixin {
 			return;
 		}
 
+		if (!PvpRulesFeature.pvpEnabled()) {
+			PvpRulesFeature.notifyAttacker(attacker, "PvP is disabled.");
+			cir.setReturnValue(false);
+			return;
+		}
+
 		if (PvpRulesFeature.noAfkKilling() && PvpRulesFeature.isAfk(victim)) {
 			PvpRulesFeature.notifyAttacker(attacker, "That player is AFK.");
 			cir.setReturnValue(false);
@@ -39,4 +45,3 @@ public class LivingEntityPvpRulesMixin {
 		}
 	}
 }
-
