@@ -68,6 +68,11 @@ public final class SmpCoreConfig {
 		 * If enabled, shift-click crafting from the result slot is blocked (prevents "craft all" behavior).
 		 */
 		public boolean oneCraftRecipes = false;
+
+		/**
+		 * If enabled, sneaking + right-clicking a villager with an empty hand picks it up into your inventory.
+		 */
+		public boolean clickVillagers = false;
 	}
 
 	public static final class Start {
