@@ -72,6 +72,12 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 						List.of(Component.literal("Configure the first-join kit item list.")),
 						() -> this.minecraft.setScreen(new SmpCoreKitsScreen(this, config)),
 						null)
+				,
+				new SmpCoreTileGrid.Entry(new ItemStack(Items.KNOWLEDGE_BOOK), Component.literal("Recipes"), Component.literal("Custom crafting recipes (server datapack)."),
+						List.of(Component.literal("Edit recipes, then run /smpcore recipes install on the server.")),
+						() -> this.minecraft.setScreen(new SmpCoreRecipesScreen(this, config)),
+						() -> Component.literal(config.recipes.enabled ? (config.recipes.shapeless.size() + " entries") : "Disabled")
+				)
 		)));
 
 		int btnY = this.height - 32;

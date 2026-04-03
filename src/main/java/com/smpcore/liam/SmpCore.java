@@ -7,21 +7,33 @@ import com.smpcore.liam.feature.SmpCoreFeatures;
 import com.smpcore.liam.integration.SimpleVoiceChatIntegration;
 import com.smpcore.liam.item.SmpCoreItems;
 import com.smpcore.liam.net.SmpCorePayloads;
+import com.smpcore.liam.util.IdUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
-
-import com.mojang.brigadier.arguments.IntegerArgumentType;
+import net.minecraft.world.level.storage.LevelResource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SmpCore implements ModInitializer {
 	public static final String MOD_ID = "smpcore";
@@ -66,13 +78,33 @@ public class SmpCore implements ModInitializer {
 
 	private static void registerCommands() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			dispatcher.register(Commands.literal("smpcore")
+			var smpcoreRoot = Commands.literal("smpcore")
 					.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
 					.executes(ctx -> {
 						ServerPlayer player = ctx.getSource().getPlayerOrException();
 						openAdminScreen(player);
 						return 1;
-					}));
+					});
+
+			smpcoreRoot.then(Commands.literal("recipes")
+					.then(Commands.literal("status").executes(ctx -> {
+						SmpCoreConfig cfg = getConfig();
+						int lines = cfg.recipes.shapeless == null ? 0 : cfg.recipes.shapeless.size();
+						ctx.getSource().sendSuccess(() -> Component.literal("Custom recipes: " + (cfg.recipes.enabled ? "enabled" : "disabled") + " (" + lines + " entries)"), false);
+						return 1;
+					}))
+					.then(Commands.literal("install").executes(ctx -> {
+						if (!getConfig().recipes.enabled) {
+							ctx.getSource().sendFailure(Component.literal("Custom recipes are disabled in config. Enable them in the SMP Core UI first."));
+							return 0;
+						}
+						MinecraftServer server = ctx.getSource().getServer();
+						int written = installRecipeDatapack(server, getConfig(), ctx.getSource().getTextName());
+						ctx.getSource().sendSuccess(() -> Component.literal("Wrote " + written + " recipe(s) to datapack. Run /reload to apply."), false);
+						return 1;
+					})));
+
+			dispatcher.register(smpcoreRoot);
 
 			dispatcher.register(Commands.literal("smpstart")
 					.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
@@ -113,6 +145,135 @@ public class SmpCore implements ModInitializer {
 						return 1;
 					})));
 		});
+	}
+
+	private static final Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
+
+	private static int installRecipeDatapack(MinecraftServer server, SmpCoreConfig config, String requestedBy) {
+		Path datapacks = server.getWorldPath(LevelResource.DATAPACK_DIR);
+		Path packDir = datapacks.resolve("smpcore-custom-recipes");
+		Path recipeDir = packDir.resolve("data").resolve(MOD_ID).resolve("recipe");
+
+		try {
+			Files.createDirectories(recipeDir);
+
+			JsonObject mcmeta = new JsonObject();
+			JsonObject pack = new JsonObject();
+			pack.addProperty("pack_format", SharedConstants.DATA_PACK_FORMAT_MAJOR);
+			pack.addProperty("description", "SMP Core Custom Recipes (generated)");
+			mcmeta.add("pack", pack);
+			Files.writeString(packDir.resolve("pack.mcmeta"), PRETTY_GSON.toJson(mcmeta), StandardCharsets.UTF_8);
+
+			List<String> lines = config.recipes.shapeless == null ? List.of() : config.recipes.shapeless;
+			int written = 0;
+			int idx = 0;
+			for (String line : lines) {
+				if (line == null || line.isBlank() || line.trim().startsWith("#")) {
+					continue;
+				}
+				RecipeSpec spec = parseShapeless(line.trim());
+				if (spec == null) {
+					continue;
+				}
+
+				JsonObject recipe = new JsonObject();
+				recipe.addProperty("type", "minecraft:crafting_shapeless");
+				JsonArray ingredients = new JsonArray();
+				for (int i = 0; i < spec.ingredients.size(); i++) {
+					ingredients.add(spec.ingredients.get(i));
+				}
+				recipe.add("ingredients", ingredients);
+				JsonObject result = new JsonObject();
+				result.addProperty("count", spec.outputCount);
+				result.addProperty("id", spec.outputId);
+				recipe.add("result", result);
+
+				String file = "custom_" + idx + "_" + safeFilePart(spec.outputId) + ".json";
+				Files.writeString(recipeDir.resolve(file), PRETTY_GSON.toJson(recipe), StandardCharsets.UTF_8);
+				idx++;
+				written++;
+			}
+
+			Files.writeString(packDir.resolve("smpcore-recipes.txt"),
+					"Generated by SMP Core for " + server.getMotd() + "\n" +
+							"Requested by: " + requestedBy + "\n" +
+							"Recipes: " + written + "\n",
+					StandardCharsets.UTF_8);
+			return written;
+		} catch (Exception e) {
+			LOGGER.warn("Failed writing recipe datapack", e);
+			return 0;
+		}
+	}
+
+	private static RecipeSpec parseShapeless(String line) {
+		// <output_id> <count> <- <input_id> <count>, <input_id> <count>
+		String[] parts = line.split("<-");
+		if (parts.length != 2) {
+			return null;
+		}
+		String left = parts[0].trim();
+		String right = parts[1].trim();
+		if (left.isEmpty() || right.isEmpty()) {
+			return null;
+		}
+
+		String[] outParts = left.split("\\s+");
+		if (outParts.length < 1) {
+			return null;
+		}
+		String outputId = outParts[0].trim();
+		if (IdUtil.parse(outputId) == null) {
+			return null;
+		}
+		int outputCount = 1;
+		if (outParts.length >= 2) {
+			try {
+				outputCount = Math.max(1, Integer.parseInt(outParts[1].trim()));
+			} catch (Exception ignored) {
+			}
+		}
+
+		ArrayList<String> ingredients = new ArrayList<>();
+		for (String token : right.split(",")) {
+			String t = token.trim();
+			if (t.isEmpty()) {
+				continue;
+			}
+			String[] inParts = t.split("\\s+");
+			if (inParts.length < 1) {
+				continue;
+			}
+			String inputId = inParts[0].trim();
+			if (IdUtil.parse(inputId) == null) {
+				return null;
+			}
+			int count = 1;
+			if (inParts.length >= 2) {
+				try {
+					count = Math.max(1, Integer.parseInt(inParts[1].trim()));
+				} catch (Exception ignored) {
+				}
+			}
+			for (int i = 0; i < count; i++) {
+				ingredients.add(inputId);
+			}
+		}
+		if (ingredients.isEmpty()) {
+			return null;
+		}
+
+		return new RecipeSpec(outputId, outputCount, ingredients);
+	}
+
+	private static String safeFilePart(String id) {
+		String s = id.toLowerCase();
+		s = s.replace(':', '_');
+		s = s.replaceAll("[^a-z0-9_\\-\\.]+", "_");
+		return s.length() > 48 ? s.substring(0, 48) : s;
+	}
+
+	private record RecipeSpec(String outputId, int outputCount, List<String> ingredients) {
 	}
 
 	private static void registerNetworking() {

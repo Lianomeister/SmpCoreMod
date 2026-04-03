@@ -20,6 +20,7 @@ public final class SmpCoreConfig {
 	public Enchantments enchantments = new Enchantments();
 	public ItemLimiter itemLimiter = new ItemLimiter();
 	public Villagers villagers = new Villagers();
+	public Recipes recipes = new Recipes();
 
 	public static final class Messages {
 		public boolean actionBar = true;
@@ -385,5 +386,20 @@ public final class SmpCoreConfig {
 		 * If enabled, villager trades never run out of stock.
 		 */
 		public boolean infiniteRestock = false;
+	}
+
+	public static final class Recipes {
+		/**
+		 * Enables SMP Core's custom-recipe datapack generator commands and UI.
+		 */
+		public boolean enabled = false;
+
+		/**
+		 * Shapeless recipe lines in format:
+		 * {@code <output_id> <count> <- <input_id> <count>, <input_id> <count>}
+		 *
+		 * Example: {@code minecraft:warped_planks 4 <- minecraft:warped_stem 1}
+		 */
+		public List<String> shapeless = new ArrayList<>();
 	}
 }
