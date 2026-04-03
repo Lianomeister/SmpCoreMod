@@ -81,6 +81,8 @@ public final class SmpCoreWorldScreen extends SmpCoreMenuBase {
 		addToggle(new ItemStack(Items.OBSIDIAN), "Nether enabled", "Allow entering the Nether via portals.", () -> config.dimensions.allowNether, v -> config.dimensions.allowNether = v);
 		addToggle(new ItemStack(Items.ENDER_EYE), "End enabled", "Allow entering The End via end portals.", () -> config.dimensions.allowEnd, v -> config.dimensions.allowEnd = v);
 
+		addToggle(new ItemStack(Items.EMERALD), "Infinite villager restock", "Villager trades never run out of stock.", () -> config.villagers.infiniteRestock, v -> config.villagers.infiniteRestock = v);
+
 		addRenderableWidget(new SmpCoreBackButton(10, this.height - 30, this::onClose));
 	}
 
@@ -112,4 +114,3 @@ public final class SmpCoreWorldScreen extends SmpCoreMenuBase {
 		));
 	}
 }
-

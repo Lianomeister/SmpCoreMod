@@ -39,6 +39,15 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 		addBan(new ItemStack(Items.DROPPER), "Remove banned items on join", "Removes banned items from players when they join.", () -> config.bans.removeBannedItemsOnJoin, v -> config.bans.removeBannedItemsOnJoin = v);
 
 		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
+				new ItemStack(Items.HOPPER),
+				Component.literal("Item limiter"),
+				Component.literal("Limit certain items per player inventory."),
+				List.of(Component.literal("Configurable list: <item_id> <max>.")),
+				() -> this.minecraft.setScreen(new SmpCoreItemLimiterScreen(this, config)),
+				() -> Component.literal(config.itemLimiter.enabled ? (config.itemLimiter.limits.size() + " limits") : "Disabled")
+		));
+
+		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
 				new ItemStack(Items.ENDER_CHEST),
 				Component.literal("No Ender Chest items"),
 				Component.literal("Items that cannot be stored in Ender Chests (comma-separated IDs)."),

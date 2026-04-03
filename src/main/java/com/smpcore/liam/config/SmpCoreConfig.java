@@ -17,6 +17,8 @@ public final class SmpCoreConfig {
 	public Death death = new Death();
 	public Effects effects = new Effects();
 	public Enchantments enchantments = new Enchantments();
+	public ItemLimiter itemLimiter = new ItemLimiter();
+	public Villagers villagers = new Villagers();
 
 	public static final class Messages {
 		public boolean actionBar = true;
@@ -288,5 +290,45 @@ public final class SmpCoreConfig {
 		 */
 		public int sharpnessMax = 5;
 		public int protectionMax = 4;
+	}
+
+	public static final class ItemLimiter {
+		public boolean enabled = false;
+
+		/**
+		 * How often to scan and enforce (seconds). Set <= 0 to disable periodic scanning (join/pickup still apply).
+		 */
+		public int scanSeconds = 10;
+
+		/**
+		 * If enabled, picking up a limited item is blocked once the player reached the limit.
+		 */
+		public boolean preventPickup = true;
+
+		/**
+		 * If enabled, excess items are dropped at the player instead of deleted.
+		 */
+		public boolean dropExcess = true;
+
+		public List<ItemLimit> limits = new ArrayList<>();
+	}
+
+	public static final class ItemLimit {
+		/**
+		 * Item ID like "minecraft:ender_pearl".
+		 */
+		public String id = "minecraft:ender_pearl";
+
+		/**
+		 * Maximum total count across player inventory.
+		 */
+		public int max = 16;
+	}
+
+	public static final class Villagers {
+		/**
+		 * If enabled, villager trades never run out of stock.
+		 */
+		public boolean infiniteRestock = false;
 	}
 }

@@ -7,6 +7,7 @@
 		"AnonymousInvisDeathMessageMixin",
 		"ClientboundLevelChunkPacketDataAntiXrayMixin",
 		"BreachSwapBanPacketMixin",
+		"MerchantOfferInfiniteRestockMixin",
 		"EndPortalBlockDimensionMixin",
 		"EnderChestLockedItemsClickMixin",
 		"LevelChunkSectionAntiXrayMixin",

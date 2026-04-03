@@ -27,6 +27,8 @@ public final class SmpCoreFeatures {
 		EffectBanFeature.init(config);
 		EnchantmentRulesFeature.init(config);
 		FirstJoinKitFeature.init(config);
+		ItemLimiterFeature.init(config);
+		VillagerRestockFeature.init(config);
 	}
 
 	public static void reloadAll(SmpCoreConfig config) {
@@ -50,5 +52,7 @@ public final class SmpCoreFeatures {
 		EffectBanFeature.reload(config);
 		EnchantmentRulesFeature.reload(config);
 		FirstJoinKitFeature.reload(config);
+		ItemLimiterFeature.reload(config);
+		VillagerRestockFeature.reload(config);
 	}
 }

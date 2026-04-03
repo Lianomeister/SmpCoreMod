@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
 public class ItemEntityPickupClampMixin {
-	@Inject(method = "playerTouch", at = @At("HEAD"))
+	@Inject(method = "playerTouch", at = @At("HEAD"), cancellable = true)
 	private void smpcore$clampEnchantmentsOnPickup(Player player, CallbackInfo ci) {
 		if (!(player instanceof ServerPlayer serverPlayer)) {
 			return;
@@ -23,6 +23,13 @@ public class ItemEntityPickupClampMixin {
 		}
 		if (EnchantmentRulesFeature.enforceOnStack(serverPlayer, stack)) {
 			self.setItem(stack);
+		}
+
+		// Item limiter can block pickup once the player reached the configured maximum.
+		if (com.smpcore.liam.feature.ItemLimiterFeature.preventPickup()
+				&& com.smpcore.liam.feature.ItemLimiterFeature.wouldExceed(serverPlayer, stack)) {
+			com.smpcore.liam.feature.ItemLimiterFeature.notifyLimit(serverPlayer, stack.getItem());
+			ci.cancel();
 		}
 	}
 }
