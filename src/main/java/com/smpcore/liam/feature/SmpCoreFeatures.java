@@ -29,6 +29,7 @@ public final class SmpCoreFeatures {
 		FirstJoinKitFeature.init(config);
 		ItemLimiterFeature.init(config);
 		VillagerRestockFeature.init(config);
+		PvpRulesFeature.init(config);
 	}
 
 	public static void reloadAll(SmpCoreConfig config) {
@@ -54,5 +55,6 @@ public final class SmpCoreFeatures {
 		FirstJoinKitFeature.reload(config);
 		ItemLimiterFeature.reload(config);
 		VillagerRestockFeature.reload(config);
+		PvpRulesFeature.reload(config);
 	}
 }

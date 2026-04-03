@@ -31,6 +31,12 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 		addToggle(new ItemStack(Items.PAPER), "Combat tag notice", "Shows a short 'Combat tagged' notice when PvP starts.", () -> config.combat.notifyOnCombatTag, v -> config.combat.notifyOnCombatTag = v);
 		addToggle(new ItemStack(Items.CLOCK), "Combat tag countdown", "Shows a countdown actionbar while combat-tagged.", () -> config.combat.showCombatTagCountdown, v -> config.combat.showCombatTagCountdown = v);
 		addToggle(new ItemStack(Items.BELL), "Announce combat log", "Broadcasts a message if a player disconnects while combat-tagged.", () -> config.combat.announceCombatLog, v -> config.combat.announceCombatLog = v);
+
+		addToggle(new ItemStack(Items.LEATHER_CHESTPLATE), "No naked killing", "Blocks PvP damage against players with no armor equipped.", () -> config.combat.noNakedKilling, v -> config.combat.noNakedKilling = v);
+		addToggle(new ItemStack(Items.LEATHER_BOOTS), "Allow naked vs naked", "If enabled, naked players can still fight each other.", () -> config.combat.allowNakedVsNaked, v -> config.combat.allowNakedVsNaked = v);
+		addToggle(new ItemStack(Items.CAMPFIRE), "No AFK killing", "Blocks PvP damage against AFK players.", () -> config.combat.noAfkKilling, v -> config.combat.noAfkKilling = v);
+		addInt(new ItemStack(Items.CLOCK), "AFK seconds", "Seconds without movement/rotation before a player counts as AFK.", () -> config.combat.afkSeconds, v -> config.combat.afkSeconds = v, 10, 3600, "s");
+
 		addToggle(new ItemStack(Items.CHEST), "Anti restock", "Blocks chests/shulkers/enderchests while combat-tagged.", () -> config.combat.antiRestock, v -> config.combat.antiRestock = v);
 		addToggle(new ItemStack(Items.ELYTRA), "Anti elytra", "Prevents starting elytra flight while combat-tagged.", () -> config.combat.antiElytra, v -> config.combat.antiElytra = v);
 

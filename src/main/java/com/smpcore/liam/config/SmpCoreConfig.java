@@ -196,6 +196,26 @@ public final class SmpCoreConfig {
 
 		public boolean banBreachSwapping = false;
 		public int breachSwapLockMs = 750;
+
+		/**
+		 * If enabled, players cannot damage "naked" players (no armor equipped).
+		 */
+		public boolean noNakedKilling = false;
+
+		/**
+		 * If enabled, naked players can still fight each other when {@link #noNakedKilling} is enabled.
+		 */
+		public boolean allowNakedVsNaked = true;
+
+		/**
+		 * If enabled, players cannot damage AFK players.
+		 */
+		public boolean noAfkKilling = false;
+
+		/**
+		 * Seconds without movement/rotation before a player counts as AFK.
+		 */
+		public int afkSeconds = 120;
 	}
 
 	public static final class Cooldowns {

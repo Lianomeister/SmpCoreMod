@@ -11,6 +11,7 @@
 		"EndPortalBlockDimensionMixin",
 		"EnderChestLockedItemsClickMixin",
 		"LevelChunkSectionAntiXrayMixin",
+		"LivingEntityPvpRulesMixin",
 		"LivingEntityDamageScaleMixin",
 		"ItemEntityPickupClampMixin",
 		"NetherPortalBlockDimensionMixin",
