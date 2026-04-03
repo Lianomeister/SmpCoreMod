@@ -59,7 +59,18 @@ public final class EffectBanFeature {
 	}
 
 	public static void reload(SmpCoreConfig config) {
-		banned = resolveBannedEffects(config.effects.bannedEffects);
+		Set<String> ids = new HashSet<>();
+		for (String id : config.effects.bannedEffects) {
+			if (id != null && !id.isBlank()) {
+				ids.add(id.trim());
+			}
+		}
+		if (config.effects.antiHealthIndicators) {
+			ids.add("minecraft:health_boost");
+			ids.add("minecraft:absorption");
+			ids.add("minecraft:glowing");
+		}
+		banned = resolveBannedEffects(ids);
 		tickInterval = config.effects.scanSeconds <= 0 ? -1 : Math.max(1, config.effects.scanSeconds * 20);
 	}
 

@@ -16,6 +16,7 @@ import java.util.List;
 public final class SmpCoreEffectsScreen extends SmpCoreMenuBase {
 	private MultiLineEditBox bannedEffects;
 	private EditBox scanSeconds;
+	private SmpCoreStyledButton antiIndicatorsButton;
 
 	public SmpCoreEffectsScreen(SmpCoreMenuBase parent, SmpCoreConfig config) {
 		super(Component.literal("Effect bans"), parent, config);
@@ -27,7 +28,11 @@ public final class SmpCoreEffectsScreen extends SmpCoreMenuBase {
 		int x = (this.width - w) / 2;
 		int y = 44;
 
-		addRenderableWidget(new SmpCoreStyledButton(x, y, w, 20, Component.literal("Toggle indicator effects…"), new ItemStack(Items.GLOWSTONE_DUST), this::toggleIndicatorEffects));
+		antiIndicatorsButton = addRenderableWidget(new SmpCoreStyledButton(x, y, w, 20, antiIndicatorsTitle(), new ItemStack(Items.GLOWSTONE_DUST), () -> {
+			config.effects.antiHealthIndicators = !config.effects.antiHealthIndicators;
+			antiIndicatorsButton.setMessage(antiIndicatorsTitle());
+			saveToServer();
+		}));
 		y += 26;
 
 		bannedEffects = new MultiLineEditBox.Builder()
@@ -66,20 +71,8 @@ public final class SmpCoreEffectsScreen extends SmpCoreMenuBase {
 		saveToServer();
 	}
 
-	private void toggleIndicatorEffects() {
-		toggleEffect("minecraft:health_boost");
-		toggleEffect("minecraft:absorption");
-		toggleEffect("minecraft:glowing");
-		bannedEffects.setValue(String.join("\n", config.effects.bannedEffects));
-		saveToServer();
-	}
-
-	private void toggleEffect(String id) {
-		if (config.effects.bannedEffects.contains(id)) {
-			config.effects.bannedEffects.remove(id);
-		} else {
-			config.effects.bannedEffects.add(id);
-		}
+	private Component antiIndicatorsTitle() {
+		return Component.literal("Anti health indicators: " + (config.effects.antiHealthIndicators ? "Enabled" : "Disabled"));
 	}
 
 	private static List<String> parseIdList(String raw) {

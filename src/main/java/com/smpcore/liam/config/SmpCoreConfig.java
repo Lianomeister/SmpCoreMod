@@ -297,6 +297,12 @@ public final class SmpCoreConfig {
 
 	public static final class Effects {
 		/**
+		 * If enabled, SMP Core blocks common "indicator" effects often used for visual health info.
+		 * This is equivalent to banning: health_boost, absorption, glowing.
+		 */
+		public boolean antiHealthIndicators = false;
+
+		/**
 		 * Status effect IDs like "minecraft:strength".
 		 */
 		public List<String> bannedEffects = new ArrayList<>();
