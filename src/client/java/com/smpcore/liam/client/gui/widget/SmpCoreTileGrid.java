@@ -97,34 +97,56 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		int padding = 12;
 		int gap = 12;
 
-		// Bigger tiles: start with fewer rows/cols.
-		int cols = 3;
-		int rows = 2;
-
 		int innerW = Math.max(0, this.width - padding * 2);
 		int innerH = Math.max(0, this.height - padding * 2);
 
-		int tileSizeByW = (innerW - gap * (cols - 1)) / cols;
-		int tileSizeByH = (innerH - gap * (rows - 1)) / rows;
-		int tileSize = Math.min(tileSizeByW, tileSizeByH);
+		// Prefer using available space (fewer pages) while keeping tiles comfortably large.
+		// When there are lots of categories, allow slightly smaller tiles to avoid needless paging.
+		int preferredMinTile = entries.size() > 10 ? 112 : (entries.size() > 6 ? 128 : 150);
+		int absoluteMinTile = 96;
+		int maxCols = 4;
+		int maxRows = 3;
 
-		// If the screen is very small, reduce columns first.
-		int desiredMinTile = 150;
-		while (cols > 2 && tileSize < desiredMinTile) {
-			cols--;
-			tileSizeByW = (innerW - gap * (cols - 1)) / cols;
-			tileSize = Math.min(tileSizeByW, tileSizeByH);
-		}
+		int bestCols = 2;
+		int bestRows = 2;
+		int bestTile = 0;
+		int bestCount = 0;
+		int bestScore = Integer.MIN_VALUE;
 
-		// If there's tons of room, allow 3 rows for more visible tiles without shrinking too much.
-		if (rows < 3) {
-			int tileSizeByH3 = (innerH - gap * (3 - 1)) / 3;
-			int tileSizeCandidate = Math.min(tileSizeByW, tileSizeByH3);
-			if (tileSizeCandidate >= desiredMinTile) {
-				rows = 3;
-				tileSize = tileSizeCandidate;
+		for (int rows = 2; rows <= maxRows; rows++) {
+			for (int cols = 2; cols <= maxCols; cols++) {
+				int tileByW = (innerW - gap * (cols - 1)) / cols;
+				int tileByH = (innerH - gap * (rows - 1)) / rows;
+				int tile = Math.min(tileByW, tileByH);
+				if (tile < absoluteMinTile) {
+					continue;
+				}
+				int count = cols * rows;
+
+				// Strongly prefer layouts that meet the preferred minimum, then maximize visible tiles,
+				// then maximize tile size.
+				int meetsPreferred = tile >= preferredMinTile ? 1 : 0;
+				int score = meetsPreferred * 1_000_000 + count * 1_000 + tile;
+				if (score > bestScore) {
+					bestScore = score;
+					bestCount = count;
+					bestCols = cols;
+					bestRows = rows;
+					bestTile = tile;
+				}
 			}
 		}
+
+		if (bestScore == Integer.MIN_VALUE) {
+			// Extremely small container: fall back to a 2x2 grid with whatever fits.
+			bestCols = 2;
+			bestRows = 2;
+			bestTile = Math.max(1, Math.min(innerW, innerH) / 2);
+		}
+
+		int cols = bestCols;
+		int rows = bestRows;
+		int tileSize = Math.max(1, bestTile);
 
 		int gridW = cols * tileSize + gap * (cols - 1);
 		int gridH = rows * tileSize + gap * (rows - 1);
