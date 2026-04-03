@@ -127,9 +127,8 @@ public final class SmpCoreVoiceChatClientScreen extends SmpCoreMenuBase {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
-		graphics.drawCenteredString(font, getTitle(), width / 2, 18, 0xFFFFFF);
-		graphics.drawCenteredString(font, Component.literal("Local settings (config/voicechat/voicechat-client.properties)"), width / 2, 30, 0xB9B9B9);
+		renderSmpBackground(graphics);
+		renderSmpHeader(graphics, getTitle(), Component.literal("Local settings (config/voicechat/voicechat-client.properties)"));
 		super.render(graphics, mouseX, mouseY, partialTick);
 		if (list != null) {
 			List<Component> tooltip = list.consumeHoveredTooltip();

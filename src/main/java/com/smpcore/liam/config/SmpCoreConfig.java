@@ -133,10 +133,27 @@ public final class SmpCoreConfig {
 
 	public Combat combat = new Combat();
 	public Cooldowns cooldowns = new Cooldowns();
+	public Kits kits = new Kits();
 
 	public static final class Combat {
 		public boolean enabled = true;
 		public int tagSeconds = 15;
+
+		/**
+		 * Broadcasts a server message when a player disconnects while combat-tagged.
+		 */
+		public boolean announceCombatLog = false;
+
+		/**
+		 * Shows an actionbar countdown while a player is combat-tagged.
+		 */
+		public boolean showCombatTagCountdown = false;
+
+		/**
+		 * Sends an actionbar message when a player is (newly) combat-tagged.
+		 */
+		public boolean notifyOnCombatTag = false;
+
 		public boolean antiRestock = true;
 		public boolean antiElytra = true;
 
@@ -185,6 +202,30 @@ public final class SmpCoreConfig {
 		public int windChargeSeconds = 0;
 		public int maceSeconds = 0;
 		public int riptideSeconds = 0;
+	}
+
+	public static final class Kits {
+		public FirstJoinKit firstJoin = new FirstJoinKit();
+	}
+
+	public static final class FirstJoinKit {
+		public boolean enabled = false;
+
+		/**
+		 * If true, the kit is only granted once per player, tracked via a persistent player tag.
+		 */
+		public boolean onlyOnce = true;
+
+		public List<KitItem> items = new ArrayList<>();
+	}
+
+	public static final class KitItem {
+		/**
+		 * Item ID like "minecraft:bread".
+		 */
+		public String id = "minecraft:bread";
+
+		public int count = 1;
 	}
 
 	public static final class Bans {

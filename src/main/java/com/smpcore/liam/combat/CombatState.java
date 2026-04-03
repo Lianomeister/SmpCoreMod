@@ -43,6 +43,20 @@ public final class CombatState {
 		combatUntilMillisByPlayer.put(playerId, System.currentTimeMillis() + tagMillis);
 	}
 
+	/**
+	 * Tags a player and returns whether they were not in combat before.
+	 */
+	public static boolean tagIfEnabled(UUID playerId) {
+		if (!enabled || tagMillis <= 0) {
+			return false;
+		}
+		long now = System.currentTimeMillis();
+		Long until = combatUntilMillisByPlayer.get(playerId);
+		boolean wasInCombat = until != null && now <= until;
+		combatUntilMillisByPlayer.put(playerId, now + tagMillis);
+		return !wasInCombat;
+	}
+
 	public static boolean isInCombat(UUID playerId) {
 		if (!enabled) {
 			return false;
@@ -57,6 +71,25 @@ public final class CombatState {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Returns remaining combat-tag time in milliseconds. Returns 0 when not in combat or disabled.
+	 */
+	public static long remainingMillis(UUID playerId) {
+		if (!enabled) {
+			return 0L;
+		}
+		Long until = combatUntilMillisByPlayer.get(playerId);
+		if (until == null) {
+			return 0L;
+		}
+		long now = System.currentTimeMillis();
+		if (now > until) {
+			combatUntilMillisByPlayer.remove(playerId, until);
+			return 0L;
+		}
+		return until - now;
 	}
 
 	public static boolean antiRestock() {

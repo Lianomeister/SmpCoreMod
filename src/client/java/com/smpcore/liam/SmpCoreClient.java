@@ -28,8 +28,8 @@ public class SmpCoreClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.smpcore.open_menu", GLFW.GLFW_KEY_UNKNOWN, CATEGORY));
-		openVoiceChatClientKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.smpcore.open_voicechat_client", GLFW.GLFW_KEY_UNKNOWN, CATEGORY));
+		openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.smpcore.open_menu", GLFW.GLFW_KEY_O, CATEGORY));
+		openVoiceChatClientKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.smpcore.open_voicechat_client", GLFW.GLFW_KEY_V, CATEGORY));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (!shownMissingVoiceChat && !isVoiceChatInstalled() && client.screen instanceof TitleScreen) {

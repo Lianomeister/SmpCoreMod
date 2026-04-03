@@ -28,6 +28,9 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 		list.setLeftPos(left);
 
 		addToggle(new ItemStack(Items.SHIELD), "Combat system", "Master toggle for combat system features.", () -> config.combat.enabled, v -> config.combat.enabled = v);
+		addToggle(new ItemStack(Items.PAPER), "Combat tag notice", "Shows a short 'Combat tagged' notice when PvP starts.", () -> config.combat.notifyOnCombatTag, v -> config.combat.notifyOnCombatTag = v);
+		addToggle(new ItemStack(Items.CLOCK), "Combat tag countdown", "Shows a countdown actionbar while combat-tagged.", () -> config.combat.showCombatTagCountdown, v -> config.combat.showCombatTagCountdown = v);
+		addToggle(new ItemStack(Items.BELL), "Announce combat log", "Broadcasts a message if a player disconnects while combat-tagged.", () -> config.combat.announceCombatLog, v -> config.combat.announceCombatLog = v);
 		addToggle(new ItemStack(Items.CHEST), "Anti restock", "Blocks chests/shulkers/enderchests while combat-tagged.", () -> config.combat.antiRestock, v -> config.combat.antiRestock = v);
 		addToggle(new ItemStack(Items.ELYTRA), "Anti elytra", "Prevents starting elytra flight while combat-tagged.", () -> config.combat.antiElytra, v -> config.combat.antiElytra = v);
 
@@ -52,9 +55,8 @@ public final class SmpCoreCombatScreen extends SmpCoreMenuBase {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
-		graphics.drawCenteredString(font, getTitle(), width / 2, 18, 0xFFFFFF);
-		graphics.drawCenteredString(font, Component.literal("Combat tag, damage scaling, and PvP rules"), width / 2, 30, 0xB9B9B9);
+		renderSmpBackground(graphics);
+		renderSmpHeader(graphics, getTitle(), Component.literal("Combat tag, damage scaling, and PvP rules"));
 		super.render(graphics, mouseX, mouseY, partialTick);
 		if (list != null) {
 			List<Component> tooltip = list.consumeHoveredTooltip();

@@ -57,6 +57,10 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 				new SmpCoreTileGrid.Entry(new ItemStack(Items.NOTE_BLOCK), Component.literal("Voice Chat"), Component.literal("Manage Simple Voice Chat server config (integration)."),
 						List.of(Component.literal("Simple Voice Chat integration + server-side settings.")),
 						() -> this.minecraft.setScreen(new SmpCoreVoiceChatScreen(this, config)),
+						null),
+				new SmpCoreTileGrid.Entry(new ItemStack(Items.CHEST), Component.literal("Kits"), Component.literal("First-join kit and other starter items."),
+						List.of(Component.literal("Configure the first-join kit item list.")),
+						() -> this.minecraft.setScreen(new SmpCoreKitsScreen(this, config)),
 						null)
 		)));
 
@@ -65,9 +69,8 @@ public final class SmpCoreMainMenuScreen extends SmpCoreMenuBase {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
-		graphics.drawCenteredString(font, Component.literal("SMP Core - Control Center"), width / 2, 18, 0xFFFFFF);
-		graphics.drawCenteredString(font, Component.literal("Click a category to configure server rules"), width / 2, 30, 0xB9B9B9);
+		renderSmpBackground(graphics);
+		renderSmpHeader(graphics, Component.literal("SMP Core - Control Center"), Component.literal("Click a category to configure server rules"));
 		super.render(graphics, mouseX, mouseY, partialTick);
 		if (grid != null) {
 			List<Component> tooltip = grid.consumeHoveredTooltip();

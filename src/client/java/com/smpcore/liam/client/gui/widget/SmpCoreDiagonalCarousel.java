@@ -28,7 +28,9 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 
 	private final List<Entry> entries;
 	private double scrollX;
+	private double targetScrollX;
 	private List<Component> hoveredTooltip;
+	private long lastNanos;
 
 	public SmpCoreDiagonalCarousel(int x, int y, int width, int height, List<Entry> entries) {
 		super(x, y, width, height, Component.empty());
@@ -56,6 +58,7 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 		int maxX = baseX + (entries.size() - 1) * (cardW + gapX);
 		int minScroll = 0;
 		int maxScroll = Math.max(0, (maxX + cardW) - (getX() + this.width - 6));
+		targetScrollX = clamp(targetScrollX, minScroll, maxScroll);
 		scrollX = clamp(scrollX, minScroll, maxScroll);
 
 		int centerX = getX() + this.width / 2;
@@ -99,6 +102,12 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 	@Override
 	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		hoveredTooltip = null;
+
+		long now = System.nanoTime();
+		float dt = lastNanos == 0 ? 0.0f : (now - lastNanos) / 1_000_000_000.0f;
+		lastNanos = now;
+		dt = Math.min(dt, 0.05f);
+		scrollX = expApproach(scrollX, targetScrollX, 16.0, dt);
 
 		List<Card> cards = layoutCards();
 		// Draw far -> near so the centered card can overlap others (3D/coverflow feel).
@@ -207,7 +216,7 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 			return false;
 		}
 		// Use vertical wheel to scroll horizontally.
-		this.scrollX = this.scrollX - scrollY * 34.0;
+		this.targetScrollX = this.targetScrollX - scrollY * 34.0;
 		return true;
 	}
 
@@ -226,6 +235,14 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 
 	private static float lerp(float a, float b, float t) {
 		return a + (b - a) * t;
+	}
+
+	private static double expApproach(double current, double target, double speed, float dt) {
+		if (dt <= 0.0f) {
+			return current;
+		}
+		double k = 1.0 - Math.exp(-speed * dt);
+		return current + (target - current) * k;
 	}
 
 	private static int withRgbAdd(int argb, int addR, int addG, int addB) {

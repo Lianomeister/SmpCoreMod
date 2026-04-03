@@ -44,6 +44,8 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 
 	private final List<Entry> entries;
 	private List<Component> hoveredTooltip;
+	private long lastNanos;
+	private float[] hoverByIndex = new float[0];
 
 	public SmpCoreTileGrid(int x, int y, int width, int height, List<Entry> entries) {
 		super(x, y, width, height, Component.empty());
@@ -131,6 +133,15 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		hoveredTooltip = null;
 
+		long now = System.nanoTime();
+		float dt = lastNanos == 0 ? 0.0f : (now - lastNanos) / 1_000_000_000.0f;
+		lastNanos = now;
+		dt = Math.min(dt, 0.05f);
+
+		if (hoverByIndex.length != entries.size()) {
+			hoverByIndex = new float[entries.size()];
+		}
+
 		List<Tile> tiles = layoutTiles();
 		tiles.sort(Comparator.comparingDouble(t -> t.depth()));
 
@@ -145,19 +156,26 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 			}
 		}
 
+		int hoveredIndex = hoveredTile == null ? -1 : hoveredTile.index();
+		for (int i = 0; i < hoverByIndex.length; i++) {
+			float target = i == hoveredIndex ? 1.0f : 0.0f;
+			hoverByIndex[i] = expApproach(hoverByIndex[i], target, 16.0f, dt);
+		}
+
 		for (Tile tile : tiles) {
 			int x = tile.x();
-			int y = tile.drawY();
+			float hoverT = hoverByIndex[tile.index()];
+			int y = tile.drawY() - Math.round(hoverT * 4.0f);
 			int s = tile.size();
 
 			boolean hovered = hoveredTile != null && hoveredTile.index() == tile.index();
 
-			float extraScale = hovered ? 0.04f : 0.0f;
+			float extraScale = 0.05f * hoverT;
 			float scale = tile.scale() + extraScale;
 
 			float depth = tile.depth();
-			int bg = hovered ? 0xAA2D2B49 : 0xAA1C1830;
-			int border = hovered ? 0xFF8A5CFF : 0xFF3B2B66;
+			int bg = lerpArgb(0xAA1C1830, 0xAA2D2B49, hoverT);
+			int border = lerpArgb(0xFF3B2B66, 0xFF8A5CFF, hoverT);
 
 			int extra = Math.round(depth * 24.0f);
 			bg = withRgbAdd(bg, extra, extra, extra);
@@ -268,5 +286,30 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		g = clampInt(g + addG, 0, 255);
 		b = clampInt(b + addB, 0, 255);
 		return (a << 24) | (r << 16) | (g << 8) | b;
+	}
+
+	private static float expApproach(float current, float target, float speed, float dt) {
+		if (dt <= 0.0f) {
+			return current;
+		}
+		float k = (float) (1.0 - Math.exp(-speed * dt));
+		return current + (target - current) * k;
+	}
+
+	private static int lerpArgb(int a, int b, float t) {
+		t = Math.max(0.0f, Math.min(1.0f, t));
+		int aA = (a >>> 24) & 0xFF;
+		int aR = (a >>> 16) & 0xFF;
+		int aG = (a >>> 8) & 0xFF;
+		int aB = a & 0xFF;
+		int bA = (b >>> 24) & 0xFF;
+		int bR = (b >>> 16) & 0xFF;
+		int bG = (b >>> 8) & 0xFF;
+		int bB = b & 0xFF;
+		int oA = aA + Math.round((bA - aA) * t);
+		int oR = aR + Math.round((bR - aR) * t);
+		int oG = aG + Math.round((bG - aG) * t);
+		int oB = aB + Math.round((bB - aB) * t);
+		return (oA << 24) | (oR << 16) | (oG << 8) | oB;
 	}
 }

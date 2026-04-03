@@ -72,9 +72,8 @@ public final class SmpCoreEnchantmentsScreen extends SmpCoreMenuBase {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
-		graphics.drawCenteredString(font, getTitle(), width / 2, 18, 0xFFFFFF);
-		graphics.drawCenteredString(font, Component.literal("Set 0 to disable a limit and ban more enchantments"), width / 2, 30, 0xB9B9B9);
+		renderSmpBackground(graphics);
+		renderSmpHeader(graphics, getTitle(), Component.literal("Set 0 to disable a limit and ban more enchantments"));
 		super.render(graphics, mouseX, mouseY, partialTick);
 	}
 

@@ -18,6 +18,7 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 	private static final String MODRINTH_URL = "https://cdn.modrinth.com/data/9eGKb6K1/versions/pFTZ8sqQ/voicechat-fabric-1.21.11-2.6.12.jar";
 
 	private final Screen parent;
+	private final long openedAtNanos = System.nanoTime();
 
 	public SmpCoreMissingVoiceChatScreen(Screen parent) {
 		super(Component.literal("Simple Voice Chat fehlt"));
@@ -48,10 +49,13 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.fillGradient(0, 0, width, height, 0xFF140B22, 0xFF0A0F25);
+		float p = introProgress();
+		int a = (int) (255.0f * p);
+		graphics.fillGradient(0, 0, width, height, withAlpha(0xFF140B22, a), withAlpha(0xFF0A0F25, a));
 
-		graphics.drawCenteredString(font, Component.literal("Simple Voice Chat ist nicht installiert"), width / 2, 22, 0xFFFFFF | 0xFF000000);
-		graphics.drawCenteredString(font, Component.literal("Für die Voice-Chat-Features brauchst du die Mod zusätzlich."), width / 2, 36, 0xB9B9B9 | 0xFF000000);
+		int yOffset = Math.round((1.0f - p) * 8.0f);
+		graphics.drawCenteredString(font, Component.literal("Simple Voice Chat ist nicht installiert"), width / 2, 22 + yOffset, withAlpha(0xFFFFFFFF, a));
+		graphics.drawCenteredString(font, Component.literal("Für die Voice-Chat-Features brauchst du die Mod zusätzlich."), width / 2, 36 + yOffset, withAlpha(0xFFB9B9B9, a));
 
 		int w = Math.min(520, this.width - 40);
 		int left = (this.width - w) / 2;
@@ -71,6 +75,19 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 		}
 
 		super.render(graphics, mouseX, mouseY, partialTick);
+	}
+
+	private float introProgress() {
+		double elapsed = (System.nanoTime() - openedAtNanos) / 1_000_000_000.0;
+		double dur = 0.22;
+		float t = (float) Math.max(0.0, Math.min(1.0, elapsed / dur));
+		float inv = 1.0f - t;
+		return 1.0f - inv * inv * inv;
+	}
+
+	private static int withAlpha(int argb, int alpha) {
+		alpha = Math.max(0, Math.min(255, alpha));
+		return (alpha << 24) | (argb & 0x00FFFFFF);
 	}
 
 	private void openModsFolder() {

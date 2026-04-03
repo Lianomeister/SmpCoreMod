@@ -26,6 +26,7 @@ public final class SmpCoreFeatures {
 		WardenHeartFeature.init(config);
 		EffectBanFeature.init(config);
 		EnchantmentRulesFeature.init(config);
+		FirstJoinKitFeature.init(config);
 	}
 
 	public static void reloadAll(SmpCoreConfig config) {
@@ -48,5 +49,6 @@ public final class SmpCoreFeatures {
 		WardenHeartFeature.reload(config);
 		EffectBanFeature.reload(config);
 		EnchantmentRulesFeature.reload(config);
+		FirstJoinKitFeature.reload(config);
 	}
 }
