@@ -21,7 +21,7 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 	private final long openedAtNanos = System.nanoTime();
 
 	public SmpCoreMissingVoiceChatScreen(Screen parent) {
-		super(Component.literal("Simple Voice Chat fehlt"));
+		super(Component.literal("Simple Voice Chat missing"));
 		this.parent = parent;
 	}
 
@@ -33,11 +33,11 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 		int buttonW = (w - 12) / 2;
 		int y = this.height - 72;
 
-		addRenderableWidget(new SmpCoreStyledButton(left, y, buttonW, 20, Component.literal("Mods-Ordner öffnen"), this::openModsFolder));
-		addRenderableWidget(new SmpCoreStyledButton(left + buttonW + 12, y, buttonW, 20, Component.literal("Download öffnen"), this::openDownload));
+		addRenderableWidget(new SmpCoreStyledButton(left, y, buttonW, 20, Component.literal("Open mods folder"), this::openModsFolder));
+		addRenderableWidget(new SmpCoreStyledButton(left + buttonW + 12, y, buttonW, 20, Component.literal("Open download"), this::openDownload));
 
-		addRenderableWidget(new SmpCoreStyledButton(left, this.height - 44, buttonW, 20, Component.literal("Link kopieren"), this::copyLink));
-		addRenderableWidget(new SmpCoreStyledButton(left + buttonW + 12, this.height - 44, buttonW, 20, Component.literal("Schließen"), this::onClose));
+		addRenderableWidget(new SmpCoreStyledButton(left, this.height - 44, buttonW, 20, Component.literal("Copy link"), this::copyLink));
+		addRenderableWidget(new SmpCoreStyledButton(left + buttonW + 12, this.height - 44, buttonW, 20, Component.literal("Close"), this::onClose));
 	}
 
 	@Override
@@ -54,18 +54,18 @@ public final class SmpCoreMissingVoiceChatScreen extends Screen {
 		graphics.fillGradient(0, 0, width, height, withAlpha(0xFF140B22, a), withAlpha(0xFF0A0F25, a));
 
 		int yOffset = Math.round((1.0f - p) * 8.0f);
-		graphics.drawCenteredString(font, Component.literal("Simple Voice Chat ist nicht installiert"), width / 2, 22 + yOffset, withAlpha(0xFFFFFFFF, a));
-		graphics.drawCenteredString(font, Component.literal("Für die Voice-Chat-Features brauchst du die Mod zusätzlich."), width / 2, 36 + yOffset, withAlpha(0xFFB9B9B9, a));
+		graphics.drawCenteredString(font, Component.literal("Simple Voice Chat is not installed"), width / 2, 22 + yOffset, withAlpha(0xFFFFFFFF, a));
+		graphics.drawCenteredString(font, Component.literal("Install the mod to use SMP Core voice chat features."), width / 2, 36 + yOffset, withAlpha(0xFFB9B9B9, a));
 
 		int w = Math.min(520, this.width - 40);
 		int left = (this.width - w) / 2;
 		int textY = 64;
 
 		Component steps = Component.literal(
-				"1) Lade \"Simple Voice Chat\" (Fabric) herunter\n" +
-				"2) Lege die .jar Datei in deinen mods-Ordner\n" +
-				"3) Starte Minecraft neu\n\n" +
-				"Tipp: In Multiplayer muss der Server Voice Chat ebenfalls installiert haben, wenn ihr miteinander reden wollt."
+				"1) Download \"Simple Voice Chat\" (Fabric)\n" +
+				"2) Put the .jar file into your mods folder\n" +
+				"3) Restart Minecraft\n\n" +
+				"Tip: On multiplayer, the server also needs Voice Chat installed for players to talk."
 		);
 
 		List<FormattedCharSequence> lines = font.split(steps, w);
