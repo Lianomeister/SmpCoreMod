@@ -46,6 +46,7 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 	private List<Component> hoveredTooltip;
 	private long lastNanos;
 	private float[] hoverByIndex = new float[0];
+	private int page;
 
 	public SmpCoreTileGrid(int x, int y, int width, int height, List<Entry> entries) {
 		super(x, y, width, height, Component.empty());
@@ -58,36 +59,93 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		return out;
 	}
 
-	private List<Tile> layoutTiles() {
+	public int page() {
+		return page;
+	}
+
+	public int pageCount() {
+		int pageSize = Math.max(1, maxVisibleTiles());
+		return Math.max(1, (entries.size() + pageSize - 1) / pageSize);
+	}
+
+	public void nextPage() {
+		setPage(page + 1);
+	}
+
+	public void prevPage() {
+		setPage(page - 1);
+	}
+
+	public void setPage(int page) {
+		int clamped = clampInt(page, 0, pageCount() - 1);
+		if (this.page != clamped) {
+			this.page = clamped;
+			hoverByIndex = new float[0];
+		}
+	}
+
+	private int maxVisibleTiles() {
+		Layout l = computeLayout();
+		return l.cols * l.rows;
+	}
+
+	private record Layout(int cols, int rows, int tileSize, int startX, int startY, int gap, int padding) {
+	}
+
+	private Layout computeLayout() {
 		int padding = 12;
-		int gap = 10;
+		int gap = 12;
 
-		int cols = 5;
-		int rows = 3;
+		// Bigger tiles: start with fewer rows/cols.
+		int cols = 3;
+		int rows = 2;
 
-		// If the grid is too narrow, reduce columns to keep tiles square.
 		int innerW = Math.max(0, this.width - padding * 2);
 		int innerH = Math.max(0, this.height - padding * 2);
-		int desiredMinTile = 96;
-		while (cols > 2) {
-			int tile = (innerW - gap * (cols - 1)) / cols;
-			if (tile >= desiredMinTile) {
-				break;
-			}
-			cols--;
-		}
 
-		int maxVisible = cols * rows;
 		int tileSizeByW = (innerW - gap * (cols - 1)) / cols;
 		int tileSizeByH = (innerH - gap * (rows - 1)) / rows;
-		// Never exceed available space; if the window is small, tiles will shrink instead of overflowing.
 		int tileSize = Math.min(tileSizeByW, tileSizeByH);
 
-		// Center the grid within our widget bounds.
+		// If the screen is very small, reduce columns first.
+		int desiredMinTile = 150;
+		while (cols > 2 && tileSize < desiredMinTile) {
+			cols--;
+			tileSizeByW = (innerW - gap * (cols - 1)) / cols;
+			tileSize = Math.min(tileSizeByW, tileSizeByH);
+		}
+
+		// If there's tons of room, allow 3 rows for more visible tiles without shrinking too much.
+		if (rows < 3) {
+			int tileSizeByH3 = (innerH - gap * (3 - 1)) / 3;
+			int tileSizeCandidate = Math.min(tileSizeByW, tileSizeByH3);
+			if (tileSizeCandidate >= desiredMinTile) {
+				rows = 3;
+				tileSize = tileSizeCandidate;
+			}
+		}
+
 		int gridW = cols * tileSize + gap * (cols - 1);
 		int gridH = rows * tileSize + gap * (rows - 1);
 		int startX = getX() + (this.width - gridW) / 2;
 		int startY = getY() + (this.height - gridH) / 2;
+		return new Layout(cols, rows, tileSize, startX, startY, gap, padding);
+	}
+
+	private List<Tile> layoutTiles() {
+		Layout layout = computeLayout();
+		int cols = layout.cols();
+		int rows = layout.rows();
+		int tileSize = layout.tileSize();
+		int startX = layout.startX();
+		int startY = layout.startY();
+		int gap = layout.gap();
+
+		int maxVisible = cols * rows;
+		int pageSize = Math.max(1, maxVisible);
+		int maxPage = Math.max(0, (entries.size() + pageSize - 1) / pageSize - 1);
+		page = clampInt(page, 0, maxPage);
+		int baseIndex = page * pageSize;
 
 		float minScale = 0.94f;
 		float maxScale = 1.08f;
@@ -96,10 +154,11 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		int centerY = getY() + this.height / 2;
 		double focusRange = Math.max(90.0, Math.min(this.width, this.height) * 0.65);
 
-		ArrayList<Tile> out = new ArrayList<>(Math.min(entries.size(), maxVisible));
-		for (int i = 0; i < entries.size(); i++) {
-			int slot = i;
-			if (slot >= maxVisible) {
+		int visibleCount = Math.min(maxVisible, Math.max(0, entries.size() - baseIndex));
+		ArrayList<Tile> out = new ArrayList<>(visibleCount);
+		for (int slot = 0; slot < visibleCount; slot++) {
+			int entryIndex = baseIndex + slot;
+			if (entryIndex >= entries.size()) {
 				break;
 			}
 
@@ -123,7 +182,7 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 			int left = Math.round(pivotX - scaled / 2.0f);
 			int top = Math.round(pivotY - scaled / 2.0f);
 
-			out.add(new Tile(i, entries.get(i), x, y, tileSize, drawY, depth, scale, left, top, left + scaled, top + scaled));
+			out.add(new Tile(entryIndex, entries.get(entryIndex), x, y, tileSize, drawY, depth, scale, left, top, left + scaled, top + scaled));
 		}
 
 		return out;
@@ -236,6 +295,16 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 				hoveredTooltip = tile.entry().tooltip();
 			}
 		}
+
+		// Page indicator
+		int pageCount = pageCount();
+		if (pageCount > 1) {
+			String label = (page + 1) + "/" + pageCount;
+			int labelW = mc.font.width(label);
+			int px = getX() + (this.width - labelW) / 2;
+			int py = getY() + this.height - 10;
+			graphics.drawString(mc.font, label, px, py, 0xB9B9B9 | 0xFF000000, true);
+		}
 	}
 
 	@Override
@@ -258,6 +327,19 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 				return;
 			}
 		}
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
+		}
+		if (scrollY > 0) {
+			prevPage();
+		} else if (scrollY < 0) {
+			nextPage();
+		}
+		return true;
 	}
 
 	@Override

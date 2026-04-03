@@ -14,7 +14,7 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 	private SmpCoreCategoryList list;
 
 	public SmpCoreGameplayScreen(SmpCoreMenuBase parent, SmpCoreConfig config) {
-		super(Component.literal("Gameplay"), parent, config);
+		super(Component.literal("Misc"), parent, config);
 	}
 
 	@Override
@@ -28,104 +28,8 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		list.setLeftPos(left);
 
 		addToggle(new ItemStack(Items.IRON_SWORD), "PvP", "Enable/disable player vs player damage.", () -> config.gameplay.pvpEnabled, v -> config.gameplay.pvpEnabled = v);
-		addToggle(new ItemStack(Items.PAPER), "Action bar notices", "Send control center notices to the action bar instead of chat.", () -> config.messages.actionBar, v -> config.messages.actionBar = v);
-		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
-				new ItemStack(Items.PAPER),
-				Component.literal("Notice cooldown"),
-				Component.literal("Minimum milliseconds between repeated notices (0 = never repeat)."),
-				List.of(Component.literal("Affects combat, cooldown, ban, and other notices.")),
-				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
-						Component.literal("Notice cooldown"),
-						Component.literal("Milliseconds"),
-						Long.toString(config.messages.minMillisBetweenNotices),
-						List.of(Component.literal("Minimum milliseconds between repeated notices (0 = never repeat).")),
-						txt -> {
-							try {
-								config.messages.minMillisBetweenNotices = Math.max(0, Long.parseLong(txt.trim()));
-							} catch (Exception ignored) {
-							}
-						})),
-				() -> Component.literal(config.messages.minMillisBetweenNotices + " ms")
-		));
-
-		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
-				new ItemStack(Items.DIAMOND_ORE),
-				Component.literal("Anti X-Ray"),
-				Component.literal("Configure Anti X-Ray engine mode."),
-				List.of(Component.literal("Configure Anti X-Ray engine mode.")),
-				() -> this.minecraft.setScreen(new SmpCoreAntiXrayScreen(this, config)),
-				() -> Component.literal(config.gameplay.antiXrayEnabled ? config.gameplay.antiXrayMode.name() : "Disabled")
-		));
 
 		addToggle(new ItemStack(Items.GHAST_TEAR), "Spectator after death", "Hardcore-like: after death, respawn in spectator.", () -> config.death.spectatorAfterDeath, v -> config.death.spectatorAfterDeath = v);
-
-		addToggle(new ItemStack(Items.RED_BED), "One player sleep", "Skip the night when one player sleeps (Overworld).", () -> config.sleep.onePlayerSleep, v -> config.sleep.onePlayerSleep = v);
-		addToggle(new ItemStack(Items.SUNFLOWER), "Clear weather on skip", "If enabled, one player sleep also clears rain/thunder.", () -> config.sleep.clearWeatherOnSkip, v -> config.sleep.clearWeatherOnSkip = v);
-
-		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
-				new ItemStack(Items.PLAYER_HEAD),
-				Component.literal("Sleep min players"),
-				Component.literal("Minimum players that must be sleeping to skip the night."),
-				List.of(Component.literal("Minimum players required."), Component.literal("Clamped to at least 1.")),
-				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
-						Component.literal("Sleep min players"),
-						Component.literal("Minimum sleeping players"),
-						Integer.toString(config.sleep.minPlayers),
-						List.of(Component.literal("Example: 1"), Component.literal("Clamped to at least 1.")),
-						txt -> {
-							try {
-								config.sleep.minPlayers = Math.max(1, Integer.parseInt(txt.trim()));
-							} catch (Exception ignored) {
-							}
-						})),
-				() -> Component.literal(Integer.toString(config.sleep.minPlayers))
-		));
-
-		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
-				new ItemStack(Items.CLOCK),
-				Component.literal("Sleep required percent"),
-				Component.literal("Percent of players that must be sleeping to skip the night (0 = disabled)."),
-				List.of(Component.literal("0 disables percent requirement."), Component.literal("Range: 0-100")),
-				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
-						Component.literal("Sleep required percent"),
-						Component.literal("Percent requirement (0-100)"),
-						Integer.toString(config.sleep.requiredPercent),
-						List.of(Component.literal("0 = only min players"), Component.literal("Example: 50 = half the players")),
-						txt -> {
-							try {
-								int v = Integer.parseInt(txt.trim());
-								config.sleep.requiredPercent = Math.max(0, Math.min(100, v));
-							} catch (Exception ignored) {
-							}
-						})),
-				() -> Component.literal(config.sleep.requiredPercent + "%")
-		));
-
-		addToggle(new ItemStack(Items.OBSIDIAN), "Nether enabled", "Allow entering the Nether via portals.", () -> config.dimensions.allowNether, v -> config.dimensions.allowNether = v);
-		addToggle(new ItemStack(Items.ENDER_EYE), "End enabled", "Allow entering The End via end portals.", () -> config.dimensions.allowEnd, v -> config.dimensions.allowEnd = v);
-
-		addToggle(new ItemStack(Items.OAK_SIGN), "Proximity chat", "Only players near you can see your messages.", () -> config.messages.proximityChatEnabled, v -> config.messages.proximityChatEnabled = v);
-		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
-				new ItemStack(Items.COMPASS),
-				Component.literal("Proximity chat radius"),
-				Component.literal("Radius in blocks for proximity chat."),
-				List.of(Component.literal("Example: 64"), Component.literal("Set <= 0 to effectively disable radius.")),
-				() -> this.minecraft.setScreen(new SmpCoreEditValueScreen(this, config,
-						Component.literal("Proximity chat radius"),
-						Component.literal("Radius in blocks"),
-						Double.toString(config.messages.proximityChatRadius),
-						List.of(Component.literal("Example: 64")),
-						txt -> {
-							try {
-								config.messages.proximityChatRadius = Math.max(0.0, Double.parseDouble(txt.trim()));
-							} catch (Exception ignored) {
-							}
-						})),
-				() -> Component.literal(trimDouble(config.messages.proximityChatRadius) + " blocks")
-		));
-		addToggle(new ItemStack(Items.COMMAND_BLOCK), "Proximity affects commands", "Apply proximity chat to /say and /me broadcasts.", () -> config.messages.proximityChatAffectsCommands, v -> config.messages.proximityChatAffectsCommands = v);
-		addToggle(new ItemStack(Items.SPYGLASS), "Proximity include spectators", "If enabled, spectators can receive proximity chat.", () -> config.messages.proximityChatIncludeSpectators, v -> config.messages.proximityChatIncludeSpectators = v);
-		addToggle(new ItemStack(Items.DIAMOND), "Proximity ops bypass", "If enabled, ops always receive proximity chat.", () -> config.messages.proximityChatOpsBypass, v -> config.messages.proximityChatOpsBypass = v);
 
 		addToggle(new ItemStack(Items.NOTE_BLOCK), "Custom death sound", "Plays a custom sound when a player dies.", () -> config.death.customDeathSoundEnabled, v -> config.death.customDeathSoundEnabled = v);
 		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(
@@ -187,7 +91,7 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		renderSmpBackground(graphics);
-		renderSmpHeader(graphics, getTitle(), Component.literal("Core server rules and world settings"));
+		renderSmpHeader(graphics, getTitle(), Component.literal("Small extra gameplay toggles"));
 		super.render(graphics, mouseX, mouseY, partialTick);
 		if (list != null) {
 			List<Component> tooltip = list.consumeHoveredTooltip();

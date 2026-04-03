@@ -99,13 +99,22 @@ public final class SmpCoreCategoryList extends ObjectSelectionList<SmpCoreCatego
 
 			Minecraft mc = Minecraft.getInstance();
 			Component valueText = value == null ? null : value.get();
+			int valueX = cardX + cardW - 10;
+			int valueW = 0;
 			if (valueText != null) {
-				int valueW = mc.font.width(valueText);
-				int valueX = cardX + cardW - 10 - valueW;
-				graphics.drawString(mc.font, valueText, valueX, titleY, (hovered ? 0xDCCBFF : 0xC9B6FF) | 0xFF000000, true);
+				// Fit the value on the right so it never overlaps the title.
+				int maxValueW = Math.max(80, cardW / 3);
+				String valuePlain = valueText.getString();
+				String valueFitted = fitWithEllipsis(mc, valuePlain, maxValueW);
+				valueW = mc.font.width(valueFitted);
+				valueX = cardX + cardW - 10 - valueW;
+				graphics.drawString(mc.font, valueFitted, valueX, titleY, (hovered ? 0xDCCBFF : 0xC9B6FF) | 0xFF000000, true);
 			}
 
-			graphics.drawString(mc.font, title, textX, titleY, titleColor | 0xFF000000, true);
+			int maxTitleW = valueText == null ? (cardX + cardW - 10 - textX) : Math.max(40, (valueX - 10) - textX);
+			String titlePlain = title.getString();
+			String titleFitted = mc.font.width(titlePlain) > maxTitleW ? fitWithEllipsis(mc, titlePlain, maxTitleW) : titlePlain;
+			graphics.drawString(mc.font, titleFitted, textX, titleY, titleColor | 0xFF000000, true);
 
 			int maxDescWidth = cardX + cardW - 10 - textX;
 			List<FormattedCharSequence> lines = mc.font.split(description, Math.max(10, maxDescWidth));
@@ -126,6 +135,22 @@ public final class SmpCoreCategoryList extends ObjectSelectionList<SmpCoreCatego
 		@Override
 		public Component getNarration() {
 			return title;
+		}
+
+		private static String fitWithEllipsis(Minecraft mc, String raw, int maxWidth) {
+			if (raw == null) {
+				return "";
+			}
+			raw = raw.trim();
+			if (raw.isEmpty()) {
+				return "";
+			}
+			if (mc.font.width(raw) <= maxWidth) {
+				return raw;
+			}
+			int ellipsisW = mc.font.width("...");
+			String cut = mc.font.plainSubstrByWidth(raw, Math.max(10, maxWidth - ellipsisW)).trim();
+			return cut + "...";
 		}
 	}
 }

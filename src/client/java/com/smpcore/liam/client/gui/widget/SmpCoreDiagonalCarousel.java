@@ -166,12 +166,24 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 
 			Component valueText = card.entry().value() == null ? null : card.entry().value().get();
 			if (valueText != null) {
-				int valueW = mc.font.width(valueText);
+				// Fit the value on the right so it never overlaps the title.
+				int maxValueW = Math.max(80, cardW / 3);
+				String valuePlain = valueText.getString();
+				String valueFitted = fitWithEllipsis(mc, valuePlain, maxValueW);
+				int valueW = mc.font.width(valueFitted);
 				int valueX = x + cardW - 10 - valueW;
-				graphics.drawString(mc.font, valueText, valueX, titleY, (hovered ? 0xDCCBFF : 0xC9B6FF) | 0xFF000000, true);
+				graphics.drawString(mc.font, valueFitted, valueX, titleY, (hovered ? 0xDCCBFF : 0xC9B6FF) | 0xFF000000, true);
 			}
 
-			graphics.drawString(mc.font, card.entry().title(), textX, titleY, (hovered ? 0xFFFFFF : 0xEDEDED) | 0xFF000000, true);
+			String titlePlain = card.entry().title().getString();
+			int maxTitleW = x + cardW - 10 - textX;
+			if (valueText != null) {
+				int maxValueW = Math.max(80, cardW / 3);
+				int valueW = Math.min(maxValueW, mc.font.width(valueText.getString()));
+				maxTitleW = Math.max(40, (x + cardW - 10 - valueW - 10) - textX);
+			}
+			String titleFitted = mc.font.width(titlePlain) > maxTitleW ? fitWithEllipsis(mc, titlePlain, maxTitleW) : titlePlain;
+			graphics.drawString(mc.font, titleFitted, textX, titleY, (hovered ? 0xFFFFFF : 0xEDEDED) | 0xFF000000, true);
 
 			int maxDescWidth = x + cardW - 10 - textX;
 			List<FormattedCharSequence> lines = mc.font.split(card.entry().description(), Math.max(10, maxDescWidth));
@@ -243,6 +255,22 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 		}
 		double k = 1.0 - Math.exp(-speed * dt);
 		return current + (target - current) * k;
+	}
+
+	private static String fitWithEllipsis(Minecraft mc, String raw, int maxWidth) {
+		if (raw == null) {
+			return "";
+		}
+		raw = raw.trim();
+		if (raw.isEmpty()) {
+			return "";
+		}
+		if (mc.font.width(raw) <= maxWidth) {
+			return raw;
+		}
+		int ellipsisW = mc.font.width("...");
+		String cut = mc.font.plainSubstrByWidth(raw, Math.max(10, maxWidth - ellipsisW)).trim();
+		return cut + "...";
 	}
 
 	private static int withRgbAdd(int argb, int addR, int addG, int addB) {
