@@ -43,6 +43,12 @@ public final class SmpCoreCategoryList extends ObjectSelectionList<SmpCoreCatego
 		}
 	}
 
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		// Slow down vertical scrolling a bit for better control on high-resolution wheels/touchpads.
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY * 0.65);
+	}
+
 	public List<Component> consumeHoveredTooltip() {
 		List<Component> out = hoveredTooltip;
 		hoveredTooltip = null;

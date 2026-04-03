@@ -228,7 +228,7 @@ public final class SmpCoreDiagonalCarousel extends AbstractWidget {
 			return false;
 		}
 		// Use vertical wheel to scroll horizontally.
-		this.targetScrollX = this.targetScrollX - scrollY * 34.0;
+		this.targetScrollX = this.targetScrollX - scrollY * 18.0;
 		return true;
 	}
 

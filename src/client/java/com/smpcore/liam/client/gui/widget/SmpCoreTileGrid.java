@@ -47,6 +47,7 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 	private long lastNanos;
 	private float[] hoverByIndex = new float[0];
 	private int page;
+	private double pageScrollAccum;
 
 	public SmpCoreTileGrid(int x, int y, int width, int height, List<Entry> entries) {
 		super(x, y, width, height, Component.empty());
@@ -334,10 +335,14 @@ public final class SmpCoreTileGrid extends AbstractWidget {
 		if (!isMouseOver(mouseX, mouseY)) {
 			return false;
 		}
-		if (scrollY > 0) {
+		// Make paging less sensitive: require multiple wheel "steps" before switching pages.
+		pageScrollAccum += scrollY;
+		if (pageScrollAccum >= 2.0) {
 			prevPage();
-		} else if (scrollY < 0) {
+			pageScrollAccum = 0.0;
+		} else if (pageScrollAccum <= -2.0) {
 			nextPage();
+			pageScrollAccum = 0.0;
 		}
 		return true;
 	}
