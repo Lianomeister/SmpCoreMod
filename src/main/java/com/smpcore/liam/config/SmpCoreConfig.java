@@ -62,6 +62,11 @@ public final class SmpCoreConfig {
 
 		public boolean invisibilityAnonymousKills = true;
 		public boolean wardenHeartDrop = true;
+
+		/**
+		 * If enabled, shift-click crafting from the result slot is blocked (prevents "craft all" behavior).
+		 */
+		public boolean oneCraftRecipes = false;
 	}
 
 	public static final class Dimensions {
@@ -258,6 +263,11 @@ public final class SmpCoreConfig {
 		public boolean banPearls = false;
 		public boolean banCrystals = false;
 		public boolean banTippedArrows = false;
+
+		/**
+		 * If enabled, players are limited to a single mace in their inventory.
+		 */
+		public boolean oneMace = false;
 
 		public boolean removeBannedItemsOnJoin = false;
 

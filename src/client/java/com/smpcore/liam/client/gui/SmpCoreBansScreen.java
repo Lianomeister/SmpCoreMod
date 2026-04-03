@@ -36,6 +36,8 @@ public final class SmpCoreBansScreen extends SmpCoreMenuBase {
 		addBan(new ItemStack(Items.END_CRYSTAL), "End crystals", "Disables end crystal placement/usage.", () -> config.bans.banCrystals, v -> config.bans.banCrystals = v);
 		addBan(new ItemStack(Items.TIPPED_ARROW), "Tipped arrows", "Disables tipped arrows.", () -> config.bans.banTippedArrows, v -> config.bans.banTippedArrows = v);
 
+		addBan(new ItemStack(Items.MACE), "One mace", "Limit players to a single mace in their inventory.", () -> config.bans.oneMace, v -> config.bans.oneMace = v);
+
 		addBan(new ItemStack(Items.DROPPER), "Remove banned items on join", "Removes banned items from players when they join.", () -> config.bans.removeBannedItemsOnJoin, v -> config.bans.removeBannedItemsOnJoin = v);
 
 		list.addCategoryEntry(new SmpCoreCategoryList.CategoryEntry(

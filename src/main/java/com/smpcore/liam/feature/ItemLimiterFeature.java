@@ -204,7 +204,11 @@ public final class ItemLimiterFeature {
 			}
 			map.put(item, max);
 		}
+
+		// Convenience toggle: one mace per inventory.
+		if (config.bans.oneMace && !map.containsKey(Items.MACE)) {
+			map.put(Items.MACE, 1);
+		}
 		return Map.copyOf(map);
 	}
 }
-

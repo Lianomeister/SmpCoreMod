@@ -28,6 +28,7 @@ public final class SmpCoreGameplayScreen extends SmpCoreMenuBase {
 		list.setLeftPos(left);
 
 		addToggle(new ItemStack(Items.IRON_SWORD), "PvP", "Enable/disable player vs player damage.", () -> config.gameplay.pvpEnabled, v -> config.gameplay.pvpEnabled = v);
+		addToggle(new ItemStack(Items.CRAFTING_TABLE), "One craft recipes", "Blocks shift-click crafting from the result slot (prevents craft-all).", () -> config.gameplay.oneCraftRecipes, v -> config.gameplay.oneCraftRecipes = v);
 
 		addToggle(new ItemStack(Items.GHAST_TEAR), "Spectator after death", "Hardcore-like: after death, respawn in spectator.", () -> config.death.spectatorAfterDeath, v -> config.death.spectatorAfterDeath = v);
 

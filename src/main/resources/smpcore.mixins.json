@@ -7,6 +7,8 @@
 		"AnonymousInvisDeathMessageMixin",
 		"ClientboundLevelChunkPacketDataAntiXrayMixin",
 		"BreachSwapBanPacketMixin",
+		"CraftingMenuOneCraftMixin",
+		"InventoryMenuOneCraftMixin",
 		"MerchantOfferInfiniteRestockMixin",
 		"EndPortalBlockDimensionMixin",
 		"EnderChestLockedItemsClickMixin",
